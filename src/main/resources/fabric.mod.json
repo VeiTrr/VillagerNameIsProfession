@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "vtvillagernameisprofession",
+  "version": "${version}",
+  "name": "VTVillagerNameIsProfession",
+  "description": "Set Villager name to its profession",
+  "authors": [
+    "VeiTr"
+  ],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/VTVillagerNameIsProfession/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "vt.villagernameisprofession.client.VTVillagerNameIsProfessionClient"
+    ],
+    "main": [
+      "vt.villagernameisprofession.VTVillagerNameIsProfession"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
