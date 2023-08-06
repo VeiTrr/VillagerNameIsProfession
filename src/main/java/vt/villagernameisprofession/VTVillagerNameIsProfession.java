@@ -71,7 +71,7 @@ public class VTVillagerNameIsProfession implements ModInitializer {
                                                             if (customname.equals(I18n.translate("entity.minecraft.villager.mason"))) {
                                                                 return true;
                                                             } else {
-                                                                return customname.equals(I18n.translate("entity.minecraft.villager.unknown"));
+                                                                return customname.equals(I18n.translate("entity.minecraft.villager"));
                                                             }
                                                         }
                                                     }
