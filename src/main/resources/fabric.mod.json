@@ -1,22 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "vtvillagernameisprofession",
+  "id": "villagernameisprofession",
   "version": "${version}",
-  "name": "VTVillagerNameIsProfession",
+  "name": "VillagerNameIsProfession",
   "description": "Set Villager name to its profession",
   "authors": [
     "VeiTr"
   ],
   "contact": {},
-  "license": "All-Rights-Reserved",
-  "icon": "assets/VTVillagerNameIsProfession/icon.png",
+  "license": "MIT",
+  "icon": "assets/villagernameisprofession/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "vt.villagernameisprofession.client.VTVillagerNameIsProfessionClient"
+      "vt.villagernameisprofession.client.VillagerNameIsProfessionClient"
     ],
     "main": [
-      "vt.villagernameisprofession.VTVillagerNameIsProfession"
+      "vt.villagernameisprofession.VillagerNameIsProfession"
+    ],
+    "modmenu": [
+      "vt.villagernameisprofession.client.compat.modmenu.ConfigScreenEntrypoint"
     ]
   },
   "depends": {
