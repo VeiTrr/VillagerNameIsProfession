@@ -17,7 +17,7 @@ import java.util.Objects;
 public class VillagerNameIsProfession implements ModInitializer {
     @Override
     public void onInitialize() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
+        ServerTickEvents.START_WORLD_TICK.register(world -> {
             for (VillagerEntity villagerEntity : world.getEntitiesByType(EntityType.VILLAGER, entity -> true)) {
                 if (villagerEntity.getCustomName() == null) {
                     SetCustomName(villagerEntity);
