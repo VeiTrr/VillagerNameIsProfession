@@ -11,7 +11,7 @@ import static vt.villagernameisprofession.VillagerNameIsProfession.getProfession
 public class ClothConfiguration implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 1)
     @ConfigEntry.Gui.RequiresRestart
-    public List<String> profession  = getProfessions(VillagerProfession.class, VillagerProfession.class);
+    public List<String> profession  = getProfessions();
 
 
 }
