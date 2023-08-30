@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+version = project.mod_version+"-v"+project.minecraft_version
 group = project.maven_group
 
 repositories {
@@ -55,7 +55,7 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archivesBaseName+"-v"+project.minecraft_version
+    archivesBaseName = project.archivesBaseName
     withSourcesJar()
 }
 

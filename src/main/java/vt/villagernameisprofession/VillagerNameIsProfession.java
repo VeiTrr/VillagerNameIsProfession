@@ -43,7 +43,7 @@ public class VillagerNameIsProfession implements ModInitializer {
 
             professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.profession;
         } else {
-            professions = getProfessions(VillagerProfession.class, VillagerProfession.class);
+            professions = getProfessions();
         }
         for (String profession : professions) {
             if (customname.equals(I18n.translate(profession))) {
@@ -53,15 +53,27 @@ public class VillagerNameIsProfession implements ModInitializer {
         return false;
     }
 
-    public static List<String> getProfessions(Class<?> clazz, Class<?> fieldType) {
-        List<String> professions = new ArrayList<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (fieldType.isAssignableFrom(field.getType())) {
-                professions.add("entity.minecraft.villager." + field.getName().toLowerCase());
-            }
-        }
+    public static List<String> getProfessions(){
+        List<String> professions = List.of(
+                "entity.minecraft.villager.none",
+                "entity.minecraft.villager.armorer",
+                "entity.minecraft.villager.butcher",
+                "entity.minecraft.villager.cartographer",
+                "entity.minecraft.villager.cleric",
+                "entity.minecraft.villager.farmer",
+                "entity.minecraft.villager.fisherman",
+                "entity.minecraft.villager.fletcher",
+                "entity.minecraft.villager.leatherworker",
+                "entity.minecraft.villager.librarian",
+                "entity.minecraft.villager.mason",
+                "entity.minecraft.villager.nitwit",
+                "entity.minecraft.villager.shepherd",
+                "entity.minecraft.villager.toolsmith",
+                "entity.minecraft.villager.weaponsmith"
+        );
         return professions;
     }
+
 
 
 }
