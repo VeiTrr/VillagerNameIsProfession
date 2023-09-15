@@ -6,11 +6,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.village.VillagerProfession;
 import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
