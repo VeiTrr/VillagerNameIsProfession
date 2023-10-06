@@ -39,8 +39,7 @@ public class VillagerNameIsProfession implements ModInitializer {
     boolean isCustomNameIsProfession(VillagerEntity villagerEntity) {
         List<String> professions;
         String customname = Objects.requireNonNull(villagerEntity.getCustomName()).getString();
-        if (VillagerNameIsProfessionClient.isConfigOn) {
-
+        if (!(VillagerNameIsProfessionClient.CLIENT_CONFIG.profession.size() == 0)) {
             professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.profession;
         } else {
             professions = getProfessions();
