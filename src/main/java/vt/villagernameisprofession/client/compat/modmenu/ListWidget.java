@@ -40,16 +40,19 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         private ButtonWidget editButton;
         private TextFieldWidget textField;
         private boolean isEditing = false;
+        private boolean isonce = false;
 
         public Entry(String profession) {
             this.profession = profession;
-            this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 150, 20, Text.of(""));
+            this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 200, 20, Text.of(""));
             this.textField.setMaxLength(256);
             this.textField.setText(profession);
             this.textField.setVisible(false);
 
             this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("Edit")), button -> {
-                if (!isEditing) {
+                if (!isonce) {
+                    isonce = true;
+                } else {if (!this.isEditing) {
                     this.textField.setVisible(true);
                     this.textField.setEditable(true);
                     this.textField.setFocused(true);
@@ -61,8 +64,8 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                     this.editButton.setMessage(Text.of(I18n.translate("Edit")));
                     this.textField.setVisible(false);
                     this.isEditing = false;
-                }
-
+                    isonce = false;
+                }}
             }).position(0, 0).size(50, 20).build();
 
         }
@@ -70,7 +73,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 25, y + 5, 0xFFFFFF);
-            textField.setX(x);
+            textField.setX(x - 50);
             textField.setY(y);
             editButton.setX(x + entryWidth - 50);
             editButton.setY(y);
@@ -80,7 +83,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return editButton.mouseClicked(mouseX, mouseY, button);
+            return editButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override
