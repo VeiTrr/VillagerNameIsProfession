@@ -1,5 +1,6 @@
 {
-  "text.autoconfig.villagernameisprofession-client.option.profession" : "List of professions of villagers",
-  "text.autoconfig.villagernameisprofession-client.option.profession.@Tooltip" : "list of keys from the lang file that are replaced and used",
-  "text.autoconfig.villagernameisprofession-client.title" : "Villager Name Is Profession"
+  "config.villagernameisprofession.edit" : "Edit",
+  "config.villagernameisprofession.save" : "Save",
+  "config.villagernameisprofession.add" : "Add",
+  "config.villagernameisprofession.title" : "Villager Name Is Profession"
 }

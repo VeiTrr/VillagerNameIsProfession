@@ -23,6 +23,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         this.parent = parent;
         this.config = config;
 
+        this.addEntry(new Entry());
         for (String profession : config.profession) {
             this.addEntry(new Entry(profession));
         }
@@ -42,6 +43,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         private boolean isEditing = false;
         private boolean isonce = false;
 
+        //Entry for the list
         public Entry(String profession) {
             this.profession = profession;
             this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 200, 20, Text.of(""));
@@ -49,26 +51,46 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setText(profession);
             this.textField.setVisible(false);
 
-            this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("Edit")), button -> {
+            this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
                 if (!isonce) {
                     isonce = true;
                 } else {if (!this.isEditing) {
                     this.textField.setVisible(true);
                     this.textField.setEditable(true);
                     this.textField.setFocused(true);
-                    this.editButton.setMessage(Text.of(I18n.translate("Save")));
+                    this.editButton.setMessage(Text.of(I18n.translate("config.villagernameisprofession.save")));
                     this.isEditing = true;
                 } else {
                     this.profession = textField.getText();
                     this.textField.setEditable(false);
-                    this.editButton.setMessage(Text.of(I18n.translate("Edit")));
+                    this.editButton.setMessage(Text.of(I18n.translate("config.villagernameisprofession.edit")));
                     this.textField.setVisible(false);
                     this.isEditing = false;
                     isonce = false;
                 }}
             }).position(0, 0).size(50, 20).build();
-
         }
+
+        //Entry for the adding field and button
+        public Entry() {
+            this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 200, 20, Text.of(""));
+            this.textField.setMaxLength(256);
+            this.textField.setText("");
+            this.textField.setVisible(true);
+
+            this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
+                if (!isonce) {
+                    isonce = true;
+                } else {
+                    this.profession = textField.getText();
+                    this.isEditing = false;
+                    isonce = false;
+                    addNewEntry(new Entry(profession));
+                }
+            }).position(0, 0).size(50, 20).build();
+        }
+
+
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
@@ -95,5 +117,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         public List<? extends Selectable> selectableChildren() {
             return Collections.singletonList(editButton);
         }
+    }
+
+    public void addNewEntry(Entry entry) {
+        this.addEntry(entry);
     }
 }
