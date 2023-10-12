@@ -6,14 +6,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuConfigScreen extends Screen {
@@ -57,21 +51,11 @@ public class ModMenuConfigScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            MinecraftClient.getInstance().setScreen(parent);
-            ConfigManager.load();
-            return true;
-        } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            professionListWidget.setFocused(false);
-            ConfigManager.save();
-            return true;
-        }
-        return professionListWidget.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        professionListWidget.mouseClicked(mouseX, mouseY, button);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -83,7 +67,5 @@ public class ModMenuConfigScreen extends Screen {
         drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
-    public boolean isPauseScreen() {
-        return false;
-    }
+
 }

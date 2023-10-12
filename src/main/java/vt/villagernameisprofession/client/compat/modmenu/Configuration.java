@@ -4,5 +4,9 @@ import java.util.List;
 import vt.villagernameisprofession.VillagerNameIsProfession;
 
 public class Configuration {
-    public List<String> profession = VillagerNameIsProfession.getProfessions();
+    public List<String> profession;
+
+    public Configuration() {
+        this.profession = VillagerNameIsProfession.getProfessions();
+    }
 }

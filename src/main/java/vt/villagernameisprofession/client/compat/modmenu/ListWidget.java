@@ -10,18 +10,15 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ListWidget extends ElementListWidget<ListWidget.Entry> {
-    private final ModMenuConfigScreen parent;
-    private final Configuration config;
-    private Entry editingElement = null;
+    private final Entry editingElement = null;
 
     public ListWidget(ModMenuConfigScreen parent, Configuration config) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
-        this.parent = parent;
-        this.config = config;
 
         this.addEntry(new Entry());
         for (String profession : config.profession) {
@@ -30,6 +27,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     }
 
     public void tick() {
+        for (Entry entry : this.children()) {
+            entry.tick();
+        }
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -39,9 +39,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     public class Entry extends ElementListWidget.Entry<Entry> {
         private String profession;
         private ButtonWidget editButton;
-        private TextFieldWidget textField;
+        private final ButtonWidget deleteButton;
+        private final TextFieldWidget textField;
         private boolean isEditing = false;
-        private boolean isonce = false;
 
         //Entry for the list
         public Entry(String profession) {
@@ -52,9 +52,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setVisible(false);
 
             this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
-                if (!isonce) {
-                    isonce = true;
-                } else {if (!this.isEditing) {
+                if (!this.isEditing) {
                     this.textField.setVisible(true);
                     this.textField.setEditable(true);
                     this.textField.setFocused(true);
@@ -66,9 +64,14 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                     this.editButton.setMessage(Text.of(I18n.translate("config.villagernameisprofession.edit")));
                     this.textField.setVisible(false);
                     this.isEditing = false;
-                    isonce = false;
-                }}
-            }).position(0, 0).size(50, 20).build();
+                    updateConfig();
+                }
+            }).position(0, 0).size(75, 20).build();
+
+            this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+                this.profession = "";
+                updateConfig();
+            }).position(0, 0).size(75, 20).build();
         }
 
         //Entry for the adding field and button
@@ -77,35 +80,60 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setMaxLength(256);
             this.textField.setText("");
             this.textField.setVisible(true);
+            this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+            }).position(0, 0).size(0, 0).build();
+            this.deleteButton.visible = false;
+            this.deleteButton.active = false;
 
             this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
-                if (!isonce) {
-                    isonce = true;
-                } else {
-                    this.profession = textField.getText();
+                    if (textField.getText().isEmpty()) {
+                        return;
+                    }
+                    addNewEntry(new Entry(textField.getText()));
+                    this.textField.setText("");
                     this.isEditing = false;
-                    isonce = false;
-                    addNewEntry(new Entry(profession));
-                }
-            }).position(0, 0).size(50, 20).build();
+                    updateConfig();
+
+            }).position(0, 0).size(75, 20).build();
         }
 
 
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 25, y + 5, 0xFFFFFF);
-            textField.setX(x - 50);
+            drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            textField.setX(x);
             textField.setY(y);
-            editButton.setX(x + entryWidth - 50);
-            editButton.setY(y);
+            editButton.setX(textField.getX() + textField.getWidth() + 5);
+            editButton.setY(textField.getY());
+            deleteButton.setX(editButton.getX() + editButton.getWidth() + 5);
+            deleteButton.setY(editButton.getY());
             textField.render(matrices, mouseX, mouseY, tickDelta);
             editButton.render(matrices, mouseX, mouseY, tickDelta);
+            deleteButton.render(matrices, mouseX, mouseY, tickDelta);
+        }
+
+        public void tick() {
+            textField.tick();
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return editButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
+            return editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean charTyped(char chr, int modifiers) {
+            if (this.textField.isFocused()) {
+                return this.textField.charTyped(chr, modifiers);
+            }
+            return super.charTyped(chr, modifiers);
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            super.keyPressed(keyCode, scanCode, modifiers);
+            return textField.keyPressed(keyCode, scanCode, modifiers);
         }
 
         @Override
@@ -117,9 +145,40 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         public List<? extends Selectable> selectableChildren() {
             return Collections.singletonList(editButton);
         }
+
+        public String getProfession() {
+            return profession;
+        }
     }
 
     public void addNewEntry(Entry entry) {
         this.addEntry(entry);
+    }
+
+    public void updateConfig() {
+        List<String> professions = new ArrayList<>();
+        for (Entry entry : this.children()) {
+            if (entry.getProfession() != null) {
+                professions.add(entry.getProfession());
+            }
+        }
+        ConfigManager.getConfig().profession = professions;
+        ConfigManager.save();
+    }
+
+    @Override
+    public void updateSize(int width, int height, int top, int bottom) {
+        updateConfig();
+        super.updateSize(width, height, top, bottom);
+    }
+
+    @Override
+    public int getRowWidth() {
+        return 400;
+    }
+
+    @Override
+    protected int getScrollbarPositionX() {
+        return super.getScrollbarPositionX() + width/10;
     }
 }

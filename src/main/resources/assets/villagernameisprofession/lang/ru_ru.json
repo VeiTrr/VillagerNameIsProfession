@@ -1,6 +1,8 @@
 {
-  "config.villagernameisprofession.edit" : "Редактировать",
+  "config.villagernameisprofession.edit" : "Изменить",
   "config.villagernameisprofession.save" : "Сохранить",
   "config.villagernameisprofession.add" : "Добавить",
-  "config.villagernameisprofession.title" : "Имя Жителя Это Профессия"
+  "config.villagernameisprofession.delete" : "Удалить",
+  "config.villagernameisprofession.title" : "Имя Жителя Это Профессия",
+  "modmenu.descriptionTranslation.villagernameisprofession" : "Этот мод позволяет вам изменить имя жителя на его профессию."
 }
