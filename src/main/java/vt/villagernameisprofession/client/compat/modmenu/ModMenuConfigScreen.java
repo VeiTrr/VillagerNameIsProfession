@@ -67,5 +67,9 @@ public class ModMenuConfigScreen extends Screen {
         drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
+    public void reInit() {
+        init();
+    }
+
 
 }

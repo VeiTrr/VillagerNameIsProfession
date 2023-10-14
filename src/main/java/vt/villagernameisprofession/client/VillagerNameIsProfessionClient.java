@@ -8,7 +8,7 @@ import vt.villagernameisprofession.client.compat.modmenu.Configuration;
 
 public class VillagerNameIsProfessionClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("VillagerNameIsProfession");
-    public static final Configuration CLIENT_CONFIG = ConfigManager.getConfig();
+    public static Configuration CLIENT_CONFIG = ConfigManager.getConfig();
 
     @Override
     public void onInitializeClient() {
@@ -22,6 +22,7 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
 
     public static void loadConfig() {
         ConfigManager.load();
+        CLIENT_CONFIG = ConfigManager.getConfig();
         LOGGER.info("Loaded config file.");
     }
 

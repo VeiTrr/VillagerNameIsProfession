@@ -9,17 +9,18 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ListWidget extends ElementListWidget<ListWidget.Entry> {
-    private final Entry editingElement = null;
+    private final ModMenuConfigScreen parent;
 
     public ListWidget(ModMenuConfigScreen parent, Configuration config) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
-
+        this.parent = parent;
         this.addEntry(new Entry());
         for (String profession : config.profession) {
             this.addEntry(new Entry(profession));
@@ -158,12 +159,14 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     public void updateConfig() {
         List<String> professions = new ArrayList<>();
         for (Entry entry : this.children()) {
-            if (entry.getProfession() != null) {
+            if (entry.getProfession() != null && !entry.getProfession().isEmpty()) {
                 professions.add(entry.getProfession());
             }
         }
         ConfigManager.getConfig().profession = professions;
         ConfigManager.save();
+        VillagerNameIsProfessionClient.loadConfig();
+        parent.reInit();
     }
 
     @Override
