@@ -53,7 +53,7 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
             professions = getProfessions();
         }
         for (String profession : professions) {
-            if (customname.equals(profession)) {
+            if (customname.equals(I18n.translate(profession))) {
                 return true;
             }
         }
