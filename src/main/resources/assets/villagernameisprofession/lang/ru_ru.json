@@ -1,5 +1,8 @@
 {
-  "text.autoconfig.villagernameisprofession-client.option.profession" : "Список профессий жителей",
-  "text.autoconfig.villagernameisprofession-client.option.profession.@Tooltip" : "Это список ключей из файла локализации которые заменяются и используются",
-  "text.autoconfig.villagernameisprofession-client.title" : "Имя Жителя Это Профессия"
+  "config.villagernameisprofession.edit" : "Изменить",
+  "config.villagernameisprofession.save" : "Сохранить",
+  "config.villagernameisprofession.add" : "Добавить",
+  "config.villagernameisprofession.delete" : "Удалить",
+  "config.villagernameisprofession.title" : "Имя Жителя Это Профессия",
+  "modmenu.descriptionTranslation.villagernameisprofession" : "Этот мод позволяет вам изменить имя жителя на его профессию."
 }

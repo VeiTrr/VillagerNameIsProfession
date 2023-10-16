@@ -15,9 +15,6 @@
     "client": [
       "vt.villagernameisprofession.client.VillagerNameIsProfessionClient"
     ],
-    "main": [
-      "vt.villagernameisprofession.VillagerNameIsProfession"
-    ],
     "modmenu": [
       "vt.villagernameisprofession.client.compat.modmenu.ConfigScreenEntrypoint"
     ]

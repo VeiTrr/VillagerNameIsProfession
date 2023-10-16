@@ -1,42 +1,54 @@
 package vt.villagernameisprofession.client.compat.modmenu;
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigHolder;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import java.io.File;
+import java.io.IOException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import net.fabricmc.loader.api.FabricLoader;
+import org.apache.commons.io.FileUtils;
 
 public class ConfigManager {
-    private static ConfigHolder<ClothConfiguration> holder;
+    private static final String CONFIG_FILE_NAME = "VillagerNameIsProfession.json";
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static void registerAutoConfig() {
-        if (holder != null) {
-            throw new IllegalStateException("Configuration already registered!");
-        }
-
-        holder = AutoConfig.register(ClothConfiguration.class, GsonConfigSerializer::new);
-        holder.save();
-    }
-
-    public static ClothConfiguration getConfig() {
-        if (holder == null) {
-            return new ClothConfiguration();
-        }
-
-        return holder.getConfig();
-    }
+    private static Configuration config;
 
     public static void load() {
-        if (holder == null) {
-            registerAutoConfig();
+        File configFile = FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILE_NAME).toFile();
+
+        if (configFile.exists()) {
+            try {
+                config = GSON.fromJson(FileUtils.readFileToString(configFile, "UTF-8"), Configuration.class);
+            } catch (JsonSyntaxException | IOException e) {
+                e.printStackTrace();
+                config = new Configuration();
+            }
+        } else {
+            config = new Configuration();
+            save();
+        }
+    }
+
+    public static Configuration getConfig() {
+        if (config == null) {
+            load();
         }
 
-        holder.load();
+        return config;
     }
 
     public static void save() {
-        if (holder == null) {
-            registerAutoConfig();
+        if (config == null) {
+            config = new Configuration();
         }
 
-        holder.save();
+        File configFile = FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILE_NAME).toFile();
+        try {
+            FileUtils.writeStringToFile(configFile, GSON.toJson(config), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
