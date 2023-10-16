@@ -1,13 +1,13 @@
 package vt.villagernameisprofession.client.compat.modmenu;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
 
@@ -21,23 +21,23 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     public ListWidget(ModMenuConfigScreen parent, Configuration config) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
         this.parent = parent;
-        this.addEntry(new Entry());
+        this.addEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry());
         for (String profession : config.profession) {
-            this.addEntry(new Entry(profession));
+            this.addEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry(profession));
         }
     }
 
     public void tick() {
-        for (Entry entry : this.children()) {
+        for (vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry : this.children()) {
             entry.tick();
         }
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
-    public class Entry extends ElementListWidget.Entry<Entry> {
+    public class Entry extends ElementListWidget.Entry<vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry> {
         private String profession;
         private ButtonWidget editButton;
         private final ButtonWidget deleteButton;
@@ -90,7 +90,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                     if (textField.getText().isEmpty()) {
                         return;
                     }
-                    addNewEntry(new Entry(textField.getText()));
+                    addNewEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry(textField.getText()));
                     this.textField.setText("");
                     this.isEditing = false;
                     updateConfig();
@@ -99,18 +99,19 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         }
 
 
+
         @Override
-        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
-            textField.setX(x);
-            textField.setY(y);
-            editButton.setX(textField.getX() + textField.getWidth() + 5);
-            editButton.setY(textField.getY());
-            deleteButton.setX(editButton.getX() + editButton.getWidth() + 5);
-            deleteButton.setY(editButton.getY());
-            textField.render(context, mouseX, mouseY, tickDelta);
-            editButton.render(context, mouseX, mouseY, tickDelta);
-            deleteButton.render(context, mouseX, mouseY, tickDelta);
+        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            textField.method_46421(x);
+            textField.method_46419(y);
+            editButton.method_46421(textField.getX() + textField.getWidth() + 5);
+            editButton.method_46419(textField.getY());
+            deleteButton.method_46421(editButton.getX() + editButton.getWidth() + 5);
+            deleteButton.method_46419(editButton.getY());
+            textField.render(matrices, mouseX, mouseY, tickDelta);
+            editButton.render(matrices, mouseX, mouseY, tickDelta);
+            deleteButton.render(matrices, mouseX, mouseY, tickDelta);
         }
 
         public void tick() {
@@ -151,13 +152,13 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         }
     }
 
-    public void addNewEntry(Entry entry) {
+    public void addNewEntry(vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry) {
         this.addEntry(entry);
     }
 
     public void updateConfig() {
         List<String> professions = new ArrayList<>();
-        for (Entry entry : this.children()) {
+        for (vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry : this.children()) {
             if (entry.getProfession() != null && !entry.getProfession().isEmpty()) {
                 professions.add(entry.getProfession());
             }
