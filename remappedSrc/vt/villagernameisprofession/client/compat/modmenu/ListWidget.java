@@ -21,14 +21,14 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     public ListWidget(ModMenuConfigScreen parent, Configuration config) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
         this.parent = parent;
-        this.addEntry(new Entry());
+        this.addEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry());
         for (String profession : config.profession) {
-            this.addEntry(new Entry(profession));
+            this.addEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry(profession));
         }
     }
 
     public void tick() {
-        for (Entry entry : this.children()) {
+        for (vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry : this.children()) {
             entry.tick();
         }
     }
@@ -37,7 +37,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    public class Entry extends ElementListWidget.Entry<Entry> {
+    public class Entry extends ElementListWidget.Entry<vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry> {
         private String profession;
         private ButtonWidget editButton;
         private final ButtonWidget deleteButton;
@@ -52,10 +52,11 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setText(profession);
             this.textField.setVisible(false);
 
-            this.editButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
+            this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
                 if (!this.isEditing) {
                     this.textField.setVisible(true);
                     this.textField.setEditable(true);
+                    this.textField.setFocused(true);
                     this.editButton.setMessage(Text.of(I18n.translate("config.villagernameisprofession.save")));
                     this.isEditing = true;
                 } else {
@@ -66,12 +67,12 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                     this.isEditing = false;
                     updateConfig();
                 }
-            });
+            }).position(0, 0).size(75, 20).build();
 
-            this.deleteButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+            this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
                 this.profession = "";
                 updateConfig();
-            });
+            }).position(0, 0).size(75, 20).build();
         }
 
         //Entry for the adding field and button
@@ -80,21 +81,21 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setMaxLength(256);
             this.textField.setText("");
             this.textField.setVisible(true);
-            this.deleteButton = new ButtonWidget(0,0,0,0,Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
-            });
+            this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+            }).position(0, 0).size(0, 0).build();
             this.deleteButton.visible = false;
             this.deleteButton.active = false;
 
-            this.editButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
+            this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
                     if (textField.getText().isEmpty()) {
                         return;
                     }
-                    addNewEntry(new Entry(textField.getText()));
+                    addNewEntry(new vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry(textField.getText()));
                     this.textField.setText("");
                     this.isEditing = false;
                     updateConfig();
 
-            });
+            }).position(0, 0).size(75, 20).build();
         }
 
 
@@ -102,12 +103,12 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
-            textField.x = x;
-            textField.y = y;
-            editButton.x = textField.x + textField.getWidth() + 5;
-            editButton.y = textField.y;
-            deleteButton.x = editButton.x + editButton.getWidth() + 5;
-            deleteButton.y = editButton.y;
+            textField.setX(x);
+            textField.setY(y);
+            editButton.setX(textField.getX() + textField.getWidth() + 5);
+            editButton.setY(textField.getY());
+            deleteButton.setX(editButton.getX() + editButton.getWidth() + 5);
+            deleteButton.setY(editButton.getY());
             textField.render(matrices, mouseX, mouseY, tickDelta);
             editButton.render(matrices, mouseX, mouseY, tickDelta);
             deleteButton.render(matrices, mouseX, mouseY, tickDelta);
@@ -151,13 +152,13 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         }
     }
 
-    public void addNewEntry(Entry entry) {
+    public void addNewEntry(vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry) {
         this.addEntry(entry);
     }
 
     public void updateConfig() {
         List<String> professions = new ArrayList<>();
-        for (Entry entry : this.children()) {
+        for (vt.villagernameisprofession.client.compat.modmenu.ListWidget.Entry entry : this.children()) {
             if (entry.getProfession() != null && !entry.getProfession().isEmpty()) {
                 professions.add(entry.getProfession());
             }

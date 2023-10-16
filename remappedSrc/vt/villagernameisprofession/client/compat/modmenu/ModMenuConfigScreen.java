@@ -30,15 +30,16 @@ public class ModMenuConfigScreen extends Screen {
         professionListWidget = new ListWidget(this, config);
         addSelectableChild(professionListWidget);
 
-        int buttonX = width / 2 - 120 / 2;
+        int buttonX = width / 2 - ButtonWidget.DEFAULT_WIDTH / 2;
         int buttonY = height - 25;
-        addDrawableChild(new ButtonWidget(buttonX, buttonY, 120, 20,
+        addDrawableChild(new ButtonWidget.Builder(
                 Text.of(I18n.translate("gui.done")),
                 button -> {
+                    professionListWidget.setFocused(false);
                     ConfigManager.save();
                     MinecraftClient.getInstance().setScreen(parent);
                 }
-        ));
+        ).position(buttonX, buttonY).build());
         super.init();
     }
 
