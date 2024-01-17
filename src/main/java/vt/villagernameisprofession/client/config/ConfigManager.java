@@ -1,13 +1,13 @@
-package vt.villagernameisprofession.client.compat.modmenu;
-
-import java.io.File;
-import java.io.IOException;
+package vt.villagernameisprofession.client.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ConfigManager {
     private static final String CONFIG_FILE_NAME = "VillagerNameIsProfession.json";

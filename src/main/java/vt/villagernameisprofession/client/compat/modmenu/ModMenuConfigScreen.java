@@ -5,9 +5,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import vt.villagernameisprofession.client.config.ConfigManager;
+import vt.villagernameisprofession.client.config.Configuration;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuConfigScreen extends Screen {
@@ -29,6 +34,34 @@ public class ModMenuConfigScreen extends Screen {
     protected void init() {
         professionListWidget = new ListWidget(this, config);
         addSelectableChild(professionListWidget);
+
+
+        int checkBoxX = width / 2 + width / 4;
+        int checkBoxY = height / 56;
+        CheckboxWidget alwaysVisibleProfessionCheckbox = new CheckboxWidget(checkBoxX, checkBoxY, I18n.translate("config.villagernameisprofession.alwaysVisibleProfession").length() * 5, 20, Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), config.AlwaysVisbleProfession) {
+            @Override
+            public void onPress() {
+                super.onPress();
+                config.AlwaysVisbleProfession = this.isChecked();
+            }
+        };
+        addDrawableChild(alwaysVisibleProfessionCheckbox);
+
+        int radiusX = width / 4;
+        int radiusY = height / 55;
+        TextFieldWidget radius = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, radiusX, radiusY, 30, 15, Text.of(""));
+        radius.setMaxLength(256);
+        radius.setText(String.valueOf(config.Radius));
+        int radiusLabelwidth = I18n.translate("config.villagernameisprofession.radius").length() * 5;
+        int radiusLabelX = radiusX - radiusLabelwidth - 10;
+        addDrawableChild(new TextWidget( radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
+
+        radius.setChangedListener(text -> {
+            if (!text.isEmpty()) {
+                config.Radius = Integer.parseInt(text);
+            }
+        });
+        addDrawableChild(radius);
 
         int buttonX = width / 2 - ButtonWidget.DEFAULT_WIDTH / 2;
         int buttonY = height - 25;

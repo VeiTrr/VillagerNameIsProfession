@@ -4,5 +4,7 @@
   "config.villagernameisprofession.add" : "Add",
   "config.villagernameisprofession.delete" : "Delete",
   "config.villagernameisprofession.title" : "Villager Name Is Profession",
-  "modmenu.descriptionTranslation.villagernameisprofession" : "Sets the villager name to its profession name."
+  "modmenu.descriptionTranslation.villagernameisprofession" : "Sets the villager name to its profession name.",
+  "config.villagernameisprofession.alwaysVisibleProfession" : "Always Visible Profession",
+  "config.villagernameisprofession.radius" : "Radius of Check"
 }

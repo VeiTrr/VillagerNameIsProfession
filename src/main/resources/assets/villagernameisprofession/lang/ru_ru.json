@@ -4,5 +4,7 @@
   "config.villagernameisprofession.add" : "Добавить",
   "config.villagernameisprofession.delete" : "Удалить",
   "config.villagernameisprofession.title" : "Имя Жителя Это Профессия",
-  "modmenu.descriptionTranslation.villagernameisprofession" : "Этот мод позволяет вам изменить имя жителя на его профессию."
+  "modmenu.descriptionTranslation.villagernameisprofession" : "Этот мод позволяет вам изменить имя жителя на его профессию.",
+  "config.villagernameisprofession.alwaysVisibleProfession" : "Всегда видна профессия",
+  "config.villagernameisprofession.radius" : "Радиус поиска"
 }
