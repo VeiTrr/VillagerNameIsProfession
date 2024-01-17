@@ -9,8 +9,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vt.villagernameisprofession.client.compat.modmenu.ConfigManager;
-import vt.villagernameisprofession.client.compat.modmenu.Configuration;
+import vt.villagernameisprofession.client.config.ConfigManager;
+import vt.villagernameisprofession.client.config.Configuration;
 
 import java.util.List;
 
@@ -24,24 +24,29 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.world != null) {
                 World world = client.world;
-                assert client.player != null;
-                Box box = client.player.getBoundingBox().expand(10.0D);
+                if (client.player == null) {
+                    return;
+                }
+                Box box = client.player.getBoundingBox().expand(CLIENT_CONFIG.Radius);
                 List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, box, entity -> true);
                 for (VillagerEntity villagerEntity : villagers) {
                     if (villagerEntity.hasCustomName()) {
                         if (isCustomNameIsProfession(villagerEntity)) {
-                            String professionKey = villagerEntity.getVillagerData().getProfession().toString().toLowerCase();
-                            Text customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
-                            villagerEntity.setCustomName(customName);
+                            updateName(villagerEntity);
                         }
                     } else {
-                        String professionKey = villagerEntity.getVillagerData().getProfession().toString().toLowerCase();
-                        Text customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
-                        villagerEntity.setCustomName(customName);
+                        updateName(villagerEntity);
                     }
                 }
             }
         });
+    }
+
+    private void updateName(VillagerEntity villagerEntity) {
+        String professionKey = villagerEntity.getVillagerData().getProfession().toString().toLowerCase();
+        Text customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
+        villagerEntity.setCustomName(customName);
+        villagerEntity.setCustomNameVisible(CLIENT_CONFIG.AlwaysVisbleProfession);
     }
 
     boolean isCustomNameIsProfession(VillagerEntity villagerEntity) {
@@ -61,7 +66,7 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
     }
 
     public static List<String> getProfessions() {
-        List<String> professions = List.of(
+        return List.of(
                 "entity.minecraft.villager.none",
                 "entity.minecraft.villager.armorer",
                 "entity.minecraft.villager.butcher",
@@ -78,7 +83,6 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
                 "entity.minecraft.villager.toolsmith",
                 "entity.minecraft.villager.weaponsmith"
         );
-        return professions;
     }
 
 

@@ -10,6 +10,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
+import vt.villagernameisprofession.client.config.ConfigManager;
+import vt.villagernameisprofession.client.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
