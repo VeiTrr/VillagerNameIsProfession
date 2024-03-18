@@ -21,22 +21,12 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     private final ModMenuConfigScreen parent;
 
     public ListWidget(ModMenuConfigScreen parent, Configuration config) {
-        super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
+        super(MinecraftClient.getInstance(), parent.width, parent.height, parent.height - 30, 25);
         this.parent = parent;
         this.addEntry(new Entry());
         for (String profession : config.profession) {
             this.addEntry(new Entry(profession));
         }
-    }
-
-    public void tick() {
-        for (Entry entry : this.children()) {
-            entry.tick();
-        }
-    }
-
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
     }
 
     public class Entry extends ElementListWidget.Entry<Entry> {
@@ -89,13 +79,13 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.deleteButton.active = false;
 
             this.editButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
-                    if (textField.getText().isEmpty()) {
-                        return;
-                    }
-                    addNewEntry(new Entry(textField.getText()));
-                    this.textField.setText("");
-                    this.isEditing = false;
-                    updateConfig();
+                if (textField.getText().isEmpty()) {
+                    return;
+                }
+                addNewEntry(new Entry(textField.getText()));
+                this.textField.setText("");
+                this.isEditing = false;
+                updateConfig();
 
             }).position(0, 0).size(75, 20).build();
         }
@@ -115,9 +105,6 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             deleteButton.render(context, mouseX, mouseY, tickDelta);
         }
 
-        public void tick() {
-            textField.tick();
-        }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -171,18 +158,12 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     }
 
     @Override
-    public void updateSize(int width, int height, int top, int bottom) {
-        updateConfig();
-        super.updateSize(width, height, top, bottom);
-    }
-
-    @Override
     public int getRowWidth() {
         return 400;
     }
 
     @Override
     protected int getScrollbarPositionX() {
-        return super.getScrollbarPositionX() + width/10;
+        return super.getScrollbarPositionX() + width / 10;
     }
 }

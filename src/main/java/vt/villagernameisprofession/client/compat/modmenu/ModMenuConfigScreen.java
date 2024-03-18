@@ -20,6 +20,8 @@ public class ModMenuConfigScreen extends Screen {
     private final Configuration config;
     private ListWidget professionListWidget;
 
+    ButtonWidget DoneButton;
+
     protected ModMenuConfigScreen(Screen parent, Configuration config) {
         super(Text.translatable("config.villagernameisprofession.title"));
         this.parent = parent;
@@ -33,18 +35,16 @@ public class ModMenuConfigScreen extends Screen {
     @Override
     protected void init() {
         professionListWidget = new ListWidget(this, config);
+        addDrawableChild(professionListWidget);
         addSelectableChild(professionListWidget);
-
 
         int checkBoxX = width / 2 + width / 4;
         int checkBoxY = height / 56;
-        CheckboxWidget alwaysVisibleProfessionCheckbox = new CheckboxWidget(checkBoxX, checkBoxY, I18n.translate("config.villagernameisprofession.alwaysVisibleProfession").length() * 5, 20, Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), config.AlwaysVisbleProfession) {
-            @Override
-            public void onPress() {
-                super.onPress();
-                config.AlwaysVisbleProfession = this.isChecked();
-            }
-        };
+        CheckboxWidget alwaysVisibleProfessionCheckbox = CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), textRenderer)
+                .pos(checkBoxX, checkBoxY)
+                .checked(config.AlwaysVisbleProfession)
+                .callback((checkbox, checked) -> config.AlwaysVisbleProfession = checked)
+                .build();
         addDrawableChild(alwaysVisibleProfessionCheckbox);
 
         int radiusX = width / 4;
@@ -54,7 +54,7 @@ public class ModMenuConfigScreen extends Screen {
         radius.setText(String.valueOf(config.Radius));
         int radiusLabelwidth = I18n.translate("config.villagernameisprofession.radius").length() * 5;
         int radiusLabelX = radiusX - radiusLabelwidth - 5;
-        addDrawableChild(new TextWidget( radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
+        addDrawableChild(new TextWidget(radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
 
         radius.setChangedListener(text -> {
             if (!text.isEmpty()) {
@@ -65,20 +65,20 @@ public class ModMenuConfigScreen extends Screen {
 
         int buttonX = width / 2 - ButtonWidget.DEFAULT_WIDTH / 2;
         int buttonY = height - 25;
-        addDrawableChild(new ButtonWidget.Builder(
+        DoneButton = new ButtonWidget.Builder(
                 Text.of(I18n.translate("gui.done")),
                 button -> {
                     professionListWidget.setFocused(false);
                     ConfigManager.save();
                     MinecraftClient.getInstance().setScreen(parent);
                 }
-        ).position(buttonX, buttonY).build());
+        ).position(buttonX, buttonY).build();
+        addDrawableChild(DoneButton);
         super.init();
     }
 
     @Override
     public void tick() {
-        professionListWidget.tick();
         super.tick();
     }
 
@@ -95,10 +95,12 @@ public class ModMenuConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
-        professionListWidget.render(context, mouseX, mouseY, delta);
+        renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow( textRenderer, title, width / 2, 15, 0xFFFFFF);
+        professionListWidget.setPosition(0, 40);
+        professionListWidget.setDimensions(width, height - DoneButton.getHeight() - 60);
+        professionListWidget.render(context, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
     public void reInit() {

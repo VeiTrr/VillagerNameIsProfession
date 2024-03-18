@@ -1,7 +1,8 @@
 package vt.villagernameisprofession.client.config;
 
-import java.util.List;
 import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
+
+import java.util.List;
 
 public class Configuration {
 
