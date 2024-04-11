@@ -45,8 +45,15 @@ public class VillagerNameIsProfessionClient implements ClientModInitializer {
     private void updateName(VillagerEntity villagerEntity) {
         String professionKey = villagerEntity.getVillagerData().getProfession().toString().toLowerCase();
         Text customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
-        villagerEntity.setCustomName(customName);
-        villagerEntity.setCustomNameVisible(CLIENT_CONFIG.AlwaysVisbleProfession);
+        if (professionKey.contains(":") && customName == Text.of("entity.minecraft.villager." + professionKey)) {
+            professionKey = professionKey.substring(professionKey.lastIndexOf(":") + 1);
+        }
+        customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
+        if (customName != Text.of("entity.minecraft.villager." + professionKey)) {
+            villagerEntity.setCustomName(customName);
+            villagerEntity.setCustomNameVisible(CLIENT_CONFIG.AlwaysVisbleProfession);
+        }
+
     }
 
     boolean isCustomNameIsProfession(VillagerEntity villagerEntity) {
