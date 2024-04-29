@@ -1,10 +1,11 @@
 {
+  "config.villagernameisprofession.title" : "Villager Name Is Profession",
   "config.villagernameisprofession.edit" : "Edit",
   "config.villagernameisprofession.save" : "Save",
   "config.villagernameisprofession.add" : "Add",
   "config.villagernameisprofession.delete" : "Delete",
-  "config.villagernameisprofession.title" : "Villager Name Is Profession",
-  "modmenu.descriptionTranslation.villagernameisprofession" : "Sets the villager name to its profession name.",
+  "config.villagernameisprofession.radius" : "Radius of Check",
   "config.villagernameisprofession.alwaysVisibleProfession" : "Always Visible Profession",
-  "config.villagernameisprofession.radius" : "Radius of Check"
+  "config.villagernameisprofession.modeSwitch" : "Block",
+  "modmenu.descriptionTranslation.villagernameisprofession" : "Sets the villager name to its profession name."
 }

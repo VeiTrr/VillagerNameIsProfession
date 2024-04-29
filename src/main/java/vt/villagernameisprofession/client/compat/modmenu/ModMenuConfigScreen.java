@@ -11,54 +11,53 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
-import vt.villagernameisprofession.client.config.ConfigManager;
-import vt.villagernameisprofession.client.config.Configuration;
+import org.jetbrains.annotations.NotNull;
+import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuConfigScreen extends Screen {
-    private final Screen parent;
-    private final Configuration config;
+    protected final Screen parent;
     private ListWidget professionListWidget;
 
     ButtonWidget DoneButton;
 
-    protected ModMenuConfigScreen(Screen parent, Configuration config) {
+    int radiusX;
+    int radiusY;
+    int radiusLabelX;
+    int radiusLabelY;
+
+    protected ModMenuConfigScreen(Screen parent) {
         super(Text.translatable("config.villagernameisprofession.title"));
         this.parent = parent;
-        this.config = config;
     }
 
-    public static Screen createScreen(Screen parent, Configuration config) {
-        return new ModMenuConfigScreen(parent, config);
+    public static Screen createScreen(Screen parent) {
+        return new ModMenuConfigScreen(parent);
     }
 
     @Override
     protected void init() {
-        professionListWidget = new ListWidget(this, config);
+        professionListWidget = new ListWidget(this);
         addDrawableChild(professionListWidget);
         addSelectableChild(professionListWidget);
 
-        int checkBoxX = width / 2 + width / 4;
-        int checkBoxY = height / 56;
-        CheckboxWidget alwaysVisibleProfessionCheckbox = CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), textRenderer)
-                .pos(checkBoxX, checkBoxY)
-                .checked(config.AlwaysVisbleProfession)
-                .callback((checkbox, checked) -> config.AlwaysVisbleProfession = checked)
-                .build();
+        CheckboxWidget alwaysVisibleProfessionCheckbox = getAVPCheckbox();
         addDrawableChild(alwaysVisibleProfessionCheckbox);
 
-        int radiusX = width / 4;
-        int radiusY = height / 55;
+        radiusX = width / 4;
+        radiusY = 6;
         TextFieldWidget radius = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, radiusX, radiusY, 30, 15, Text.of(""));
         radius.setMaxLength(256);
-        radius.setText(String.valueOf(config.Radius));
-        int radiusLabelwidth = I18n.translate("config.villagernameisprofession.radius").length() * 5;
-        int radiusLabelX = radiusX - radiusLabelwidth - 5;
+        radius.setText(String.valueOf(VillagerNameIsProfessionClient.CLIENT_CONFIG.getRadius()));
+        int radiusLabelwidth = (I18n.translate("config.villagernameisprofession.radius").length() - 1) * 5;
+        radiusLabelX = radiusX - radiusLabelwidth;
+        radiusLabelY = radiusY + (radius.getHeight() - 8) / 2;
+
         addDrawableChild(new TextWidget(radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
 
         radius.setChangedListener(text -> {
             if (!text.isEmpty()) {
-                config.Radius = Integer.parseInt(text);
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setRadius(Integer.parseInt(text));
             }
         });
         addDrawableChild(radius);
@@ -69,12 +68,23 @@ public class ModMenuConfigScreen extends Screen {
                 Text.of(I18n.translate("gui.done")),
                 button -> {
                     professionListWidget.setFocused(false);
-                    ConfigManager.save();
+                    VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+                    VillagerNameIsProfessionClient.loadConfig();
                     MinecraftClient.getInstance().setScreen(parent);
                 }
         ).position(buttonX, buttonY).build();
         addDrawableChild(DoneButton);
         super.init();
+    }
+
+    private @NotNull CheckboxWidget getAVPCheckbox() {
+        int checkBoxX = width / 2 + width / 6;
+        int checkBoxY = 3;
+        return  CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), textRenderer)
+                .pos(checkBoxX, checkBoxY)
+                .checked(VillagerNameIsProfessionClient.CLIENT_CONFIG.isAlwaysVisibleProfession())
+                .callback((checkbox, checked) -> VillagerNameIsProfessionClient.CLIENT_CONFIG.setAlwaysVisibleProfession(checked))
+                .build();
     }
 
     @Override
@@ -103,7 +113,8 @@ public class ModMenuConfigScreen extends Screen {
         context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
-    public void reInit() {
+    protected void reInit(Screen parent) {
+        MinecraftClient.getInstance().setScreen(new ModMenuConfigScreen(parent));
         init();
     }
 
