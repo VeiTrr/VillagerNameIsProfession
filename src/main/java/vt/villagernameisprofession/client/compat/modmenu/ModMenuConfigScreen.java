@@ -10,53 +10,49 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import vt.villagernameisprofession.client.config.ConfigManager;
-import vt.villagernameisprofession.client.config.Configuration;
+import org.jetbrains.annotations.NotNull;
+import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuConfigScreen extends Screen {
-    private final Screen parent;
-    private final Configuration config;
+    protected final Screen parent;
     private ListWidget professionListWidget;
 
     int radiusX;
     int radiusY;
+    int radiusLabelX;
+    int radiusLabelY;
 
-    protected ModMenuConfigScreen(Screen parent, Configuration config) {
+    protected ModMenuConfigScreen(Screen parent) {
         super(Text.translatable("config.villagernameisprofession.title"));
         this.parent = parent;
-        this.config = config;
     }
 
-    public static Screen createScreen(Screen parent, Configuration config) {
-        return new ModMenuConfigScreen(parent, config);
+    public static Screen createScreen(Screen parent) {
+        return new ModMenuConfigScreen(parent);
     }
 
     @Override
     protected void init() {
-        professionListWidget = new ListWidget(this, config);
+        professionListWidget = new ListWidget(this);
         addSelectableChild(professionListWidget);
 
-        int checkBoxX = width / 2 + width / 4;
-        int checkBoxY = height / 56;
-        CheckboxWidget alwaysVisibleProfessionCheckbox = new CheckboxWidget(checkBoxX, checkBoxY, I18n.translate("config.villagernameisprofession.alwaysVisibleProfession").length() * 5, 20, Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), config.AlwaysVisbleProfession) {
-            @Override
-            public void onPress() {
-                super.onPress();
-                config.AlwaysVisbleProfession = this.isChecked();
-            }
-        };
+        CheckboxWidget alwaysVisibleProfessionCheckbox = getAVPCheckbox();
         addDrawableChild(alwaysVisibleProfessionCheckbox);
 
         radiusX = width / 4;
-        radiusY = height / 55;
+        radiusY = 6;
         TextFieldWidget radius = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, radiusX, radiusY, 30, 15, Text.of(""));
         radius.setMaxLength(256);
-        radius.setText(String.valueOf(config.Radius));
+        radius.setText(String.valueOf(VillagerNameIsProfessionClient.CLIENT_CONFIG.getRadius()));
+        int radiusLabelwidth = (I18n.translate("config.villagernameisprofession.radius").length() - 1) * 5;
+        radiusLabelX = radiusX - radiusLabelwidth;
+        radiusLabelY = radiusY + (radius.getHeight() - 8) / 2;
+
 
         radius.setChangedListener(text -> {
             if (!text.isEmpty()) {
-                config.Radius = Integer.parseInt(text);
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setRadius(Integer.parseInt(text));
             }
         });
         addDrawableChild(radius);
@@ -66,11 +62,24 @@ public class ModMenuConfigScreen extends Screen {
         addDrawableChild(new ButtonWidget(buttonX, buttonY, 120, 20,
                 Text.of(I18n.translate("gui.done")),
                 button -> {
-                    ConfigManager.save();
+                    VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+                    VillagerNameIsProfessionClient.loadConfig();
                     MinecraftClient.getInstance().setScreen(parent);
                 }
         ));
         super.init();
+    }
+
+    private @NotNull CheckboxWidget getAVPCheckbox() {
+        int checkBoxX = width / 2 + width / 6;
+        int checkBoxY = 3;
+        return new CheckboxWidget(checkBoxX, checkBoxY, I18n.translate("config.villagernameisprofession.alwaysVisibleProfession").length() * 5, 20, Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), VillagerNameIsProfessionClient.CLIENT_CONFIG.isAlwaysVisibleProfession()) {
+            @Override
+            public void onPress() {
+                super.onPress();
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setAlwaysVisibleProfession(this.isChecked());
+            }
+        };
     }
 
     @Override
@@ -94,13 +103,12 @@ public class ModMenuConfigScreen extends Screen {
         renderBackground(matrices);
         professionListWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
-        drawCenteredText(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
-        int radiusLabelwidth = I18n.translate("config.villagernameisprofession.radius").length() * 5;
-        int radiusLabelX = radiusX - radiusLabelwidth - 5;
-        drawCenteredText(matrices, textRenderer, Text.of(I18n.translate("config.villagernameisprofession.radius")), radiusLabelX, radiusY, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, title, width / 2, 10, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, Text.of(I18n.translate("config.villagernameisprofession.radius")), radiusLabelX, radiusLabelY, 0xFFFFFF);
     }
 
-    public void reInit() {
+    protected void reInit(Screen parent) {
+        MinecraftClient.getInstance().setScreen(new ModMenuConfigScreen(parent));
         init();
     }
 

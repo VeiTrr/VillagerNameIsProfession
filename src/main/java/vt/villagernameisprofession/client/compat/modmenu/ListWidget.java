@@ -4,14 +4,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import vt.villagernameisprofession.client.VillagerNameIsProfessionClient;
-import vt.villagernameisprofession.client.config.ConfigManager;
-import vt.villagernameisprofession.client.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,11 +19,11 @@ import java.util.List;
 public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     private final ModMenuConfigScreen parent;
 
-    public ListWidget(ModMenuConfigScreen parent, Configuration config) {
+    public ListWidget(ModMenuConfigScreen parent) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
         this.parent = parent;
         this.addEntry(new Entry());
-        for (String profession : config.profession) {
+        for (String profession : VillagerNameIsProfessionClient.CLIENT_CONFIG.getProfession()) {
             this.addEntry(new Entry(profession));
         }
     }
@@ -45,16 +44,19 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         private final ButtonWidget deleteButton;
         private final TextFieldWidget textField;
         private boolean isEditing = false;
+        private CheckboxWidget modeSwitchCheckbox = new CheckboxWidget(0, 0, 0, 0, Text.of(""), false);
 
         //Entry for the list
         public Entry(String profession) {
+            this.modeSwitchCheckbox.visible = false;
+            this.modeSwitchCheckbox.active = false;
             this.profession = profession;
             this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 200, 20, Text.of(""));
             this.textField.setMaxLength(256);
             this.textField.setText(profession);
             this.textField.setVisible(false);
 
-            this.editButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
+            this.editButton = new ButtonWidget(0, 0, 75, 20, Text.of(I18n.translate("config.villagernameisprofession.edit")), button -> {
                 if (!this.isEditing) {
                     this.textField.setVisible(true);
                     this.textField.setEditable(true);
@@ -70,7 +72,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 }
             });
 
-            this.deleteButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+            this.deleteButton = new ButtonWidget(0, 0, 75, 20, Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
                 this.profession = "";
                 updateConfig();
             });
@@ -82,23 +84,29 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setMaxLength(256);
             this.textField.setText("");
             this.textField.setVisible(true);
-            this.deleteButton = new ButtonWidget(0,0,0,0,Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
+            this.deleteButton = new ButtonWidget(0, 0, 0, 0, Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
             });
             this.deleteButton.visible = false;
             this.deleteButton.active = false;
 
-            this.editButton = new ButtonWidget(0, 0, 75, 20,Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
-                    if (textField.getText().isEmpty()) {
-                        return;
-                    }
-                    addNewEntry(new Entry(textField.getText()));
-                    this.textField.setText("");
-                    this.isEditing = false;
-                    updateConfig();
+            this.editButton = new ButtonWidget(0, 0, 75, 20, Text.of(I18n.translate("config.villagernameisprofession.add")), button -> {
+                if (textField.getText().isEmpty()) {
+                    return;
+                }
+                addNewEntry(new Entry(textField.getText()));
+                this.textField.setText("");
+                updateConfig();
 
             });
+            this.modeSwitchCheckbox = new CheckboxWidget(0, 0, 200, 20, Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), VillagerNameIsProfessionClient.CLIENT_CONFIG.isProfessionListBlocking()) {
+                @Override
+                public void onPress() {
+                    super.onPress();
+                    VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfessionListBlocking(this.isChecked());
+                    VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+                }
+            };
         }
-
 
 
         @Override
@@ -113,6 +121,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             textField.render(matrices, mouseX, mouseY, tickDelta);
             editButton.render(matrices, mouseX, mouseY, tickDelta);
             deleteButton.render(matrices, mouseX, mouseY, tickDelta);
+            modeSwitchCheckbox.x = deleteButton.x + deleteButton.getWidth() + 5;
+            modeSwitchCheckbox.y = deleteButton.y;
+            modeSwitchCheckbox.render(matrices, mouseX, mouseY, tickDelta);
         }
 
         public void tick() {
@@ -121,7 +132,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
+            return modeSwitchCheckbox.mouseClicked(mouseX, mouseY, button) || editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override
@@ -164,10 +175,10 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 professions.add(entry.getProfession());
             }
         }
-        ConfigManager.getConfig().profession = professions;
-        ConfigManager.save();
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfession(professions);
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
         VillagerNameIsProfessionClient.loadConfig();
-        parent.reInit();
+        parent.reInit(parent.parent);
     }
 
     @Override
@@ -183,6 +194,6 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
     @Override
     protected int getScrollbarPositionX() {
-        return super.getScrollbarPositionX() + width/10;
+        return super.getScrollbarPositionX() + width / 10;
     }
 }
