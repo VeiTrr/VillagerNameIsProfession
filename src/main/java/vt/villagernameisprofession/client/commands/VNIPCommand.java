@@ -53,7 +53,6 @@ public class VNIPCommand {
 
     private static final SuggestionProvider<FabricClientCommandSource> ADD_PROFESSION = (context, builder) -> {
         Registry.VILLAGER_PROFESSION.forEach(profession -> {
-            //к профессиям добавляем " в начале и в конце
             String temp = "\"" + profession.toString() + "\"";
             builder.suggest(temp);
         });
@@ -97,14 +96,18 @@ public class VNIPCommand {
                                             setConfigValue(key, value, context.getSource().getPlayer());
                                             return 1;
                                         })
-                                )
+                                ))
+                        .then(literal("profession")
+                                .executes(context -> {
+                                    showConfigValue("profession", context.getSource().getPlayer());
+                                    return 1;
+                                })
                                 .then(literal("add")
                                         .then(argument("value", StringArgumentType.string())
                                                 .suggests(ADD_PROFESSION)
                                                 .executes(context -> {
-                                                    String key = StringArgumentType.getString(context, "key");
                                                     String value = StringArgumentType.getString(context, "value");
-                                                    addProfession(key, value, context.getSource().getPlayer());
+                                                    addProfession(value, context.getSource().getPlayer());
                                                     return 1;
                                                 })
                                         )
@@ -113,9 +116,8 @@ public class VNIPCommand {
                                         .then(argument("value", StringArgumentType.string())
                                                 .suggests(REMOVE_PROFESSION)
                                                 .executes(context -> {
-                                                    String key = StringArgumentType.getString(context, "key");
                                                     String value = StringArgumentType.getString(context, "value");
-                                                    removeProfession(key, value, context.getSource().getPlayer());
+                                                    removeProfession(value, context.getSource().getPlayer());
                                                     return 1;
                                                 })
                                         )
@@ -126,49 +128,50 @@ public class VNIPCommand {
     }
 
 
-    private static void addProfession(String key, String value, ClientPlayerEntity player) {
-        if (key.equals("profession")) {
-            List<String> professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.getProfession();
-            if (!professions.contains(value)) {
-                professions.add(value);
-            } else {
-                player.sendMessage(Text.of("Profession already exists"), false);
-                return;
-            }
-            VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfession(professions);
-            VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
-            player.sendMessage(Text.of("Added " + value + " to " + key), false);
+    private static void addProfession(String value, ClientPlayerEntity player) {
+        List<String> professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.getProfession();
+        if (!professions.contains(value)) {
+            professions.add(value);
         } else {
-            player.sendMessage(Text.of("Invalid key"), false);
+            player.sendMessage(Text.of("Profession already exists"), false);
+            return;
         }
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfession(professions);
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+        player.sendMessage(Text.of("Added " + value + " to " + "profession"), false);
     }
 
-    private static void removeProfession(String key, String value, ClientPlayerEntity player) {
-        if (key.equals("profession")) {
-            List<String> professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.getProfession();
-            if (professions.contains(value)) {
-                professions.remove(value);
-            } else {
-                player.sendMessage(Text.of("Profession not found"), false);
-                return;
-            }
-            VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfession(professions);
-            VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
-            player.sendMessage(Text.of("Removed " + value + " from " + key), false);
+    private static void removeProfession(String value, ClientPlayerEntity player) {
+        List<String> professions = VillagerNameIsProfessionClient.CLIENT_CONFIG.getProfession();
+        if (professions.contains(value)) {
+            professions.remove(value);
         } else {
-            player.sendMessage(Text.of("Invalid key"), false);
+            player.sendMessage(Text.of("Profession not found"), false);
+            return;
         }
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfession(professions);
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+        player.sendMessage(Text.of("Removed " + value + " from " + "profession"), false);
     }
 
     private static void setConfigValue(String key, String value, ClientPlayerEntity player) {
-        Configuration CLIENT_CONFIG = Configuration.load();
-        if (CLIENT_CONFIG.getConfigFields().containsKey(key)) {
-            CLIENT_CONFIG.getConfigFields().put(key, value);
-            CLIENT_CONFIG.save();
-            player.sendMessage(Text.of("Set " + key + " to " + value), false);
-        } else {
-            player.sendMessage(Text.of("Invalid key"), false);
+        switch (key) {
+            case "alwaysVisibleProfession":
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setAlwaysVisibleProfession(Boolean.parseBoolean(value));
+                break;
+            case "isProfessionListBlocking":
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setProfessionListBlocking(Boolean.parseBoolean(value));
+                break;
+            case "radius":
+                VillagerNameIsProfessionClient.CLIENT_CONFIG.setRadius(Integer.parseInt(value));
+                break;
+            default:
+                player.sendMessage(Text.of("Invalid key"), false);
+                return;
         }
+
+        VillagerNameIsProfessionClient.CLIENT_CONFIG.save();
+        player.sendMessage(Text.of("Set " + key + " to " + value), false);
     }
 
     private static void showConfigValue(String key, ClientPlayerEntity player) {
