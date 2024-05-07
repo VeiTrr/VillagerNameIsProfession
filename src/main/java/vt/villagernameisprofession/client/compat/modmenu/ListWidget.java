@@ -97,9 +97,8 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 addNewEntry(new Entry(textField.getText()));
                 this.textField.setText("");
                 updateConfig();
-
-
             }).position(0, 0).size(75, 20).build();
+
             this.modeSwitchCheckbox = new CheckboxWidget(0, 0, 200, 20, Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), VillagerNameIsProfessionClient.CLIENT_CONFIG.isProfessionListBlocking()) {
                 @Override
                 public void onPress() {
@@ -112,7 +111,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            if (!this.textField.isVisible()) {
+                context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            }
             textField.setX(x);
             textField.setY(y);
             editButton.setX(textField.getX() + textField.getWidth() + 5);
@@ -133,6 +134,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            this.textField.setFocused(this.textField.mouseClicked(mouseX, mouseY, button));
             return modeSwitchCheckbox.mouseClicked(mouseX, mouseY, button) || editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
         }
 
