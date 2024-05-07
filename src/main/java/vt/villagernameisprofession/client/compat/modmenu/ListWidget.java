@@ -75,6 +75,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setMaxLength(256);
             this.textField.setText("");
             this.textField.setVisible(true);
+            this.textField.setEditable(true);
             this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
             }).position(0, 0).size(0, 0).build();
             this.deleteButton.visible = false;
@@ -87,9 +88,8 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 addNewEntry(new Entry(textField.getText()));
                 this.textField.setText("");
                 updateConfig();
-
-
             }).position(0, 0).size(75, 20).build();
+
             this.modeSwitchCheckbox = CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), MinecraftClient.getInstance().textRenderer)
                     .pos(0, 0)
                     .checked(VillagerNameIsProfessionClient.CLIENT_CONFIG.isProfessionListBlocking())
@@ -102,7 +102,9 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            if (!this.textField.isVisible()) {
+                context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            }
             textField.setX(x);
             textField.setY(y);
             editButton.setX(textField.getX() + textField.getWidth() + 5);
@@ -120,6 +122,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            this.textField.setFocused(this.textField.mouseClicked(mouseX, mouseY, button));
             return modeSwitchCheckbox.mouseClicked(mouseX, mouseY, button) || editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
         }
 
