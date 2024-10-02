@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+issueTrackerURL = "https://github.com/VeiTrr/VillagerNameIsProfession/issues"
+license = "MIT"
+
+[[mods]]
+modId = "villagernameisprofession"
+version = "${version}"
+displayName = "VillagerNameIsProfession"
+authors = "VeiTr"
+description = '''
+Set Villager name to its profession
+'''
+logoFile = "icon.png"
+
+[[dependencies.villagernameisprofession]]
+modId = "forge"
+mandatory = true
+versionRange = "[43,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.villagernameisprofession]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2,)"
+ordering = "NONE"
+side = "BOTH"
