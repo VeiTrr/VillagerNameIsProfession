@@ -34,6 +34,10 @@ public class ConfigScreen extends Screen {
         return new ConfigScreen(parent);
     }
 
+    public static Screen createScreen(MinecraftClient minecraftClient, Screen parent) {
+        return new ConfigScreen(parent);
+    }
+
     @Override
     protected void init() {
         professionListWidget = new ListWidget(this);
@@ -116,6 +120,4 @@ public class ConfigScreen extends Screen {
         MinecraftClient.getInstance().setScreen(new ConfigScreen(parent));
         init();
     }
-
-
 }

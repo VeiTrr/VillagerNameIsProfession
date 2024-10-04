@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[2,)"
+loaderVersion = "[4,)"
 issueTrackerURL = "https://github.com/VeiTrr/VillagerNameIsProfession/issues"
 license = "MIT"
 
@@ -17,14 +17,14 @@ displayTest = "NONE"
 [[dependencies.villagernameisprofession]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.4,)"
+versionRange = "[21.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagernameisprofession]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.20.4,)"
+versionRange = "[1.21,)"
 ordering = "NONE"
 side = "BOTH"
 

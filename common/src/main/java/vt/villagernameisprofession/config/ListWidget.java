@@ -180,7 +180,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     }
 
     @Override
-    protected int getScrollbarPositionX() {
-        return super.getScrollbarPositionX() + width / 10;
+    protected int getScrollbarX() {
+        return super.getScrollbarX() + width / 10;
     }
 }
