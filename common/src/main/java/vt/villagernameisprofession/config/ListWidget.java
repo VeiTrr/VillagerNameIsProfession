@@ -1,6 +1,7 @@
 package vt.villagernameisprofession.config;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -8,10 +9,8 @@ import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import vt.villagernameisprofession.VillagerNameIsProfession;
-import vt.villagernameisprofession.config.ConfigScreen;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +36,8 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         }
     }
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public class Entry extends ElementListWidget.Entry<Entry> {
@@ -100,9 +99,8 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 addNewEntry(new Entry(textField.getText()));
                 this.textField.setText("");
                 updateConfig();
-
-
             }).position(0, 0).size(75, 20).build();
+
             this.modeSwitchCheckbox = new CheckboxWidget(0, 0, 200, 20, Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), CLIENT_CONFIG.isProfessionListBlocking()) {
                 @Override
                 public void onPress() {
@@ -113,22 +111,23 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             };
         }
 
-
         @Override
-        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            if (!this.textField.isVisible()) {
+                context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, profession, x + 100, y + 5, 0xFFFFFF);
+            }
             textField.setX(x);
             textField.setY(y);
             editButton.setX(textField.getX() + textField.getWidth() + 5);
             editButton.setY(textField.getY());
             deleteButton.setX(editButton.getX() + editButton.getWidth() + 5);
             deleteButton.setY(editButton.getY());
-            textField.render(matrices, mouseX, mouseY, tickDelta);
-            editButton.render(matrices, mouseX, mouseY, tickDelta);
-            deleteButton.render(matrices, mouseX, mouseY, tickDelta);
+            textField.render(context, mouseX, mouseY, tickDelta);
+            editButton.render(context, mouseX, mouseY, tickDelta);
+            deleteButton.render(context, mouseX, mouseY, tickDelta);
             modeSwitchCheckbox.setX(deleteButton.getX() + deleteButton.getWidth() + 5);
             modeSwitchCheckbox.setY(deleteButton.getY());
-            modeSwitchCheckbox.render(matrices, mouseX, mouseY, tickDelta);
+            modeSwitchCheckbox.render(context, mouseX, mouseY, tickDelta);
         }
 
         public void tick() {
@@ -137,6 +136,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            this.textField.setFocused(this.textField.mouseClicked(mouseX, mouseY, button));
             return modeSwitchCheckbox.mouseClicked(mouseX, mouseY, button) || editButton.mouseClicked(mouseX, mouseY, button) || deleteButton.mouseClicked(mouseX, mouseY, button) || textField.mouseClicked(mouseX, mouseY, button);
         }
 

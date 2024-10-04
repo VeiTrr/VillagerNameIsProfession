@@ -1,6 +1,7 @@
 package vt.villagernameisprofession.config;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
@@ -102,11 +103,11 @@ public class ConfigScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        professionListWidget.render(matrices, mouseX, mouseY, delta);
-        super.render(matrices, mouseX, mouseY, delta);
-        drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
+        professionListWidget.render(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow( textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
     protected void reInit(Screen parent) {
