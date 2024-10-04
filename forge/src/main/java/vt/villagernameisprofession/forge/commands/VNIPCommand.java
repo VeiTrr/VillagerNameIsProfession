@@ -194,14 +194,7 @@ public class VNIPCommand {
             return;
         }
         Box box = MinecraftClient.getInstance().player.getBoundingBox().expand(radius);
-        List<VillagerEntity> villagers = MinecraftClient.getInstance().player.getWorld().getEntitiesByClass(VillagerEntity.class, box, entity -> true);
-        for (VillagerEntity villagerEntity : villagers) {
-            String xyz = "X: " + villagerEntity.getBlockPos().getX() + " Y: " + villagerEntity.getBlockPos().getY() + " Z: " + villagerEntity.getBlockPos().getZ();
-            MutableText message = Text.literal(villagerEntity.getVillagerData().getProfession().toString() + " at " + xyz);
-            MutableText addButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.add")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession add " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.GREEN);
-            MutableText removeButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.delete")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.RED);
-            MinecraftClient.getInstance().player.sendMessage(message.append(addButton).append(removeButton), false);
-        }
+        runGetProfession(box);
     }
 
     public static void getProfession(ServerCommandSource source) {
@@ -209,12 +202,16 @@ public class VNIPCommand {
             return;
         }
         Box box = MinecraftClient.getInstance().player.getBoundingBox().expand(CLIENT_CONFIG.getRadius());
+        runGetProfession(box);
+    }
+
+    private static void runGetProfession(Box box) {
         List<VillagerEntity> villagers = MinecraftClient.getInstance().player.getWorld().getEntitiesByClass(VillagerEntity.class, box, entity -> true);
         for (VillagerEntity villagerEntity : villagers) {
             String xyz = "X: " + villagerEntity.getBlockPos().getX() + " Y: " + villagerEntity.getBlockPos().getY() + " Z: " + villagerEntity.getBlockPos().getZ();
             MutableText message = Text.literal(villagerEntity.getVillagerData().getProfession().toString() + " at " + xyz);
-            MutableText addButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.add")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession add " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.GREEN);
-            MutableText removeButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.delete")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.RED);
+            MutableText addButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.add")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/vnip config profession add " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.GREEN);
+            MutableText removeButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.delete")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.RED);
             MinecraftClient.getInstance().player.sendMessage(message.append(addButton).append(removeButton), false);
         }
     }
