@@ -33,3 +33,4 @@ jobs:
           path: |
             fabric/build/libs/
             forge/build/libs/
+            !**/*-dev-shadow.jar

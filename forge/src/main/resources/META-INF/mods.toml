@@ -12,6 +12,7 @@ description = '''
 Set Villager name to its profession
 '''
 logoFile = "icon.png"
+displayTest = "NONE"
 
 [[dependencies.villagernameisprofession]]
 modId = "forge"
