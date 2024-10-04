@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[49,)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/VeiTrr/VillagerNameIsProfession/issues"
 license = "MIT"
 
@@ -15,15 +15,18 @@ logoFile = "icon.png"
 displayTest = "NONE"
 
 [[dependencies.villagernameisprofession]]
-modId = "forge"
-mandatory = true
-versionRange = "[49,)"
+modId = "neoforge"
+type = "required"
+versionRange = "[20.4,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagernameisprofession]]
 modId = "minecraft"
-mandatory = true
+type = "required"
 versionRange = "[1.20.4,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[mixins]]
+config = "villagernameisprofession.mixins.json"

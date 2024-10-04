@@ -22,22 +22,12 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     private final ConfigScreen parent;
 
     public ListWidget(ConfigScreen parent) {
-        super(MinecraftClient.getInstance(), parent.width, parent.height, 25, parent.height - 30, 25);
+        super(MinecraftClient.getInstance(), parent.width, parent.height, parent.height - 30, 25);
         this.parent = parent;
         this.addEntry(new Entry());
         for (String profession : CLIENT_CONFIG.getProfession()) {
             this.addEntry(new Entry(profession));
         }
-    }
-
-    public void tick() {
-        for (Entry entry : this.children()) {
-            entry.tick();
-        }
-    }
-
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
     }
 
     public class Entry extends ElementListWidget.Entry<Entry> {
@@ -46,7 +36,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         private final ButtonWidget deleteButton;
         private final TextFieldWidget textField;
         private boolean isEditing = false;
-        private CheckboxWidget modeSwitchCheckbox = new CheckboxWidget(0, 0, 0, 0, Text.of(""), false);
+        private CheckboxWidget modeSwitchCheckbox = CheckboxWidget.builder(Text.of(""), MinecraftClient.getInstance().textRenderer).build();
 
         //Entry for the list
         public Entry(String profession) {
@@ -87,6 +77,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             this.textField.setMaxLength(256);
             this.textField.setText("");
             this.textField.setVisible(true);
+            this.textField.setEditable(true);
             this.deleteButton = new ButtonWidget.Builder(Text.of(I18n.translate("config.villagernameisprofession.delete")), button -> {
             }).position(0, 0).size(0, 0).build();
             this.deleteButton.visible = false;
@@ -101,14 +92,14 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 updateConfig();
             }).position(0, 0).size(75, 20).build();
 
-            this.modeSwitchCheckbox = new CheckboxWidget(0, 0, 200, 20, Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), CLIENT_CONFIG.isProfessionListBlocking()) {
-                @Override
-                public void onPress() {
-                    super.onPress();
-                    CLIENT_CONFIG.setProfessionListBlocking(this.isChecked());
-                    CLIENT_CONFIG.save();
-                }
-            };
+            this.modeSwitchCheckbox = CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.modeSwitch")), MinecraftClient.getInstance().textRenderer)
+                    .pos(0, 0)
+                    .checked(CLIENT_CONFIG.isProfessionListBlocking())
+                    .callback((checkbox, checked) -> {
+                        CLIENT_CONFIG.setProfessionListBlocking(checked);
+                        CLIENT_CONFIG.save();
+                    })
+                    .build();
         }
 
         @Override
@@ -130,9 +121,6 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
             modeSwitchCheckbox.render(context, mouseX, mouseY, tickDelta);
         }
 
-        public void tick() {
-            textField.tick();
-        }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -184,12 +172,6 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         CLIENT_CONFIG.save();
         VillagerNameIsProfession.loadConfig();
         parent.reInit(parent.parent);
-    }
-
-    @Override
-    public void updateSize(int width, int height, int top, int bottom) {
-        updateConfig();
-        super.updateSize(width, height, top, bottom);
     }
 
     @Override
