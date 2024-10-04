@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -36,6 +37,7 @@ public class ConfigScreen extends Screen {
         professionListWidget = new ListWidget(this);
         addSelectableChild(professionListWidget);
 
+
         CheckboxWidget alwaysVisibleProfessionCheckbox = getAVPCheckbox();
         addDrawableChild(alwaysVisibleProfessionCheckbox);
 
@@ -48,6 +50,7 @@ public class ConfigScreen extends Screen {
         radiusLabelX = radiusX - radiusLabelwidth;
         radiusLabelY = radiusY + (radius.getHeight() - 8) / 2;
 
+        addDrawableChild(new TextWidget( radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
 
         radius.setChangedListener(text -> {
             if (!text.isEmpty()) {
@@ -56,16 +59,17 @@ public class ConfigScreen extends Screen {
         });
         addDrawableChild(radius);
 
-        int buttonX = width / 2 - 120 / 2;
+        int buttonX = width / 2 - ButtonWidget.DEFAULT_WIDTH / 2;
         int buttonY = height - 25;
-        addDrawableChild(new ButtonWidget(buttonX, buttonY, 120, 20,
+        addDrawableChild(new ButtonWidget.Builder(
                 Text.of(I18n.translate("gui.done")),
                 button -> {
+                    professionListWidget.setFocused(false);
                     CLIENT_CONFIG.save();
                     VillagerNameIsProfession.loadConfig();
                     MinecraftClient.getInstance().setScreen(parent);
                 }
-        ));
+        ).position(buttonX, buttonY).build());
         super.init();
     }
 
@@ -102,8 +106,7 @@ public class ConfigScreen extends Screen {
         renderBackground(matrices);
         professionListWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
-        drawCenteredText(matrices, textRenderer, title, width / 2, 10, 0xFFFFFF);
-        drawCenteredText(matrices, textRenderer, Text.of(I18n.translate("config.villagernameisprofession.radius")), radiusLabelX, radiusLabelY, 0xFFFFFF);
+        drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 15, 0xFFFFFF);
     }
 
     protected void reInit(Screen parent) {

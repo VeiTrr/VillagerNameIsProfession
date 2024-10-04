@@ -1,26 +1,22 @@
 package vt.villagernameisprofession.commands;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
 import vt.villagernameisprofession.config.Configuration;
 
 import java.util.List;
 
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static vt.villagernameisprofession.VillagerNameIsProfession.CLIENT_CONFIG;
 
 public class VNIPCommand {
@@ -52,7 +48,7 @@ public class VNIPCommand {
     };
 
     public static final SuggestionProvider<Object> ADD_PROFESSION = (context, builder) -> {
-        Registry.VILLAGER_PROFESSION.forEach(profession -> {
+        Registries.VILLAGER_PROFESSION.forEach(profession -> {
             String temp = "\"" + profession.toString() + "\"";
             builder.suggest(temp);
         });
@@ -66,8 +62,6 @@ public class VNIPCommand {
         }
         return builder.buildFuture();
     };
-
-
 
 
     public static void addProfession(String value, ClientPlayerEntity player) {

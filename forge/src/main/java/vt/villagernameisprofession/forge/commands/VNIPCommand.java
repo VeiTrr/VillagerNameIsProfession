@@ -8,13 +8,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
 import vt.villagernameisprofession.config.Configuration;
 
 import java.util.List;
@@ -53,7 +53,7 @@ public class VNIPCommand {
 
     @SuppressWarnings("deprecation")
     private static final SuggestionProvider<ServerCommandSource> ADD_PROFESSION = (context, builder) -> {
-        Registry.VILLAGER_PROFESSION.forEach(profession -> {
+        Registries.VILLAGER_PROFESSION.forEach(profession -> {
             String temp = "\"" + profession.toString() + "\"";
             builder.suggest(temp);
         });
