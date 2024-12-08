@@ -1,16 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "villagernameisprofession",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "VillagerNameIsProfession",
-  "description": "Set Villager name to its profession",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
     "VeiTr"
   ],
   "contact": {
-    "sources": "https://github.com/VeiTrr/VillagerNameIsProfession"
+    "sources": "${mod_sources}",
+    "issues": "${mod_issue_tracker}"
   },
-  "license": "MIT",
+  "license": "${mod_license}",
   "icon": "assets/villagernameisprofession/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -22,8 +23,9 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.14.19",
-    "fabric": "*",
-    "minecraft": "1.19.2"
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=17",
+    "fabric-api": "*"
   }
 }
