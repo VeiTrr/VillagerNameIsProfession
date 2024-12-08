@@ -39,9 +39,39 @@ dependencies {
 
 processResources {
     inputs.property 'version', project.version
+    inputs.property 'mod_id', project.archives_name
+    inputs.property 'minecraft_version', project.minecraft_version
+    inputs.property 'mod_name', project.mod_name
+    inputs.property 'mod_description', project.mod_description
+    inputs.property 'mod_authors', project.mod_authors
+    inputs.property 'mod_license', project.mod_license
+    inputs.property 'mod_sources', project.mod_sources
+    inputs.property 'mod_issue_tracker', project.mod_issue_tracker
+    inputs.property 'fabric_loader_version', project.fabric_loader_version
+    inputs.property 'minimum_minecraft_version', project.minimum_minecraft_version
+
+    def majorMinecraftVersion
+    if (project.minimum_minecraft_version != "0") {
+        println("Using minimum Minecraft version: ${project.minimum_minecraft_version}")
+        majorMinecraftVersion = project.minimum_minecraft_version
+    } else {
+        majorMinecraftVersion = project.minecraft_version.replaceAll(/(\d+\.\d+)\..*/, '$1')
+        println("Using Minecraft version: $majorMinecraftVersion")
+    }
 
     filesMatching('fabric.mod.json') {
-        expand version: project.version
+        expand(
+                version: project.version,
+                mod_id: project.archives_name,
+                mod_name: project.mod_name,
+                mod_description: project.mod_description,
+                mod_authors: project.mod_authors.split(',').collect { it.trim() },
+                mod_license: project.mod_license,
+                mod_sources: project.mod_sources,
+                mod_issue_tracker: project.mod_issue_tracker,
+                minecraft_version: majorMinecraftVersion,
+                fabric_loader_version: project.fabric_loader_version
+        )
     }
 }
 
