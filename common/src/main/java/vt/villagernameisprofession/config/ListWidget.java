@@ -24,13 +24,13 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
     public ListWidget(ConfigScreen parent) {
         super(MinecraftClient.getInstance(), parent.width, parent.height, parent.height - 30, 25);
         this.parent = parent;
-        this.addEntry(new Entry());
+        this.addEntry(new ListWidget.Entry());
         for (String profession : CLIENT_CONFIG.getProfession()) {
-            this.addEntry(new Entry(profession));
+            this.addEntry(new ListWidget.Entry(profession));
         }
     }
 
-    public class Entry extends ElementListWidget.Entry<Entry> {
+    public class Entry extends ElementListWidget.Entry<ListWidget.Entry> {
         private String profession;
         private ButtonWidget editButton;
         private final ButtonWidget deleteButton;
@@ -87,7 +87,7 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
                 if (textField.getText().isEmpty()) {
                     return;
                 }
-                addNewEntry(new Entry(textField.getText()));
+                addNewEntry(new ListWidget.Entry(textField.getText()));
                 this.textField.setText("");
                 updateConfig();
             }).position(0, 0).size(75, 20).build();
@@ -157,13 +157,13 @@ public class ListWidget extends ElementListWidget<ListWidget.Entry> {
         }
     }
 
-    public void addNewEntry(Entry entry) {
+    public void addNewEntry(ListWidget.Entry entry) {
         this.addEntry(entry);
     }
 
     public void updateConfig() {
         List<String> professions = new ArrayList<>();
-        for (Entry entry : this.children()) {
+        for (ListWidget.Entry entry : this.children()) {
             if (entry.getProfession() != null && !entry.getProfession().isEmpty()) {
                 professions.add(entry.getProfession());
             }
