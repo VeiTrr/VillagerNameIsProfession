@@ -1,9 +1,9 @@
 plugins {
     id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'com.gradleup.shadow' version '9.3.2' apply false
     id 'co.uzzu.dotenv.gradle' version "4.0.0"
-    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
+    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
 architectury {
@@ -22,7 +22,7 @@ subprojects {
 
     base {
         // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
-        archivesName = "$rootProject.archives_name-$rootProject.minecraft_version-$project.name"
+        archivesName = "$rootProject.mod_id-$rootProject.minecraft_version-$project.name"
     }
 
     repositories {
@@ -34,10 +34,7 @@ subprojects {
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-        mappings loom.layered {
-            it.mappings("net.fabricmc:yarn:$rootProject.yarn_mappings:v2")
-            it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$rootProject.yarn_mappings_patch_neoforge_version")
-        }
+        mappings loom.officialMojangMappings()
     }
 
     java {
@@ -85,7 +82,7 @@ publishMods {
         changelogType = "markdown"
         minecraftVersionRange {
             start = project.minecraft_version
-            end = "1.21.4"
+            end = "1.21.11"
         }
         clientRequired = true
         serverRequired = false
@@ -96,7 +93,7 @@ publishMods {
         projectId = "yQLp1BFa"
         minecraftVersionRange {
             start = project.minecraft_version
-            end = "1.21.4"
+            end = "1.21.11"
         }
     }
 

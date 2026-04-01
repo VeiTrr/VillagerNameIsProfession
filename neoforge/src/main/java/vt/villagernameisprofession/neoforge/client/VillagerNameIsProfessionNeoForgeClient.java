@@ -1,12 +1,10 @@
 package vt.villagernameisprofession.neoforge.client;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -25,20 +23,15 @@ public final class VillagerNameIsProfessionNeoForgeClient {
     public VillagerNameIsProfessionNeoForgeClient(IEventBus modEventBus, ModContainer modContainer) {
         VillagerNameIsProfession.init();
         modEventBus.addListener(VillagerNameIsProfessionNeoForgeClient::onClientSetup);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class,ConfigScreen::createScreen);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> ConfigScreen.createScreen(parent));
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onClientTickEvent(ClientTickEvent.Post event) {
-        VillagerNameIsProfession.ClientTickEvent(MinecraftClient.getInstance());
+        VillagerNameIsProfession.ClientTickEvent(Minecraft.getInstance());
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent ignored) {
-        NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) -> {
-            VNIPCommand.register(event.getDispatcher());
-        });
-
+        NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) -> VNIPCommand.register(event.getDispatcher()));
     }
 }

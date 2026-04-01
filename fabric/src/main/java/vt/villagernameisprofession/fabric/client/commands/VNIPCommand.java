@@ -5,16 +5,16 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.phys.AABB;
 import vt.villagernameisprofession.config.Configuration;
 
 import java.util.List;
@@ -52,8 +52,8 @@ public class VNIPCommand {
     };
 
     private static final SuggestionProvider<FabricClientCommandSource> ADD_PROFESSION = (context, builder) -> {
-        Registries.VILLAGER_PROFESSION.forEach(profession -> {
-            String temp = "\"" + profession.toString() + "\"";
+        BuiltInRegistries.VILLAGER_PROFESSION.forEach(profession -> {
+            String temp = "\"" + profession + "\"";
             builder.suggest(temp);
         });
         return builder.buildFuture();
@@ -67,7 +67,7 @@ public class VNIPCommand {
         return builder.buildFuture();
     };
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext commandRegistryAccess) {
         dispatcher.register(literal("vnip")
                 .then(literal("getprofession")
                         .then(argument("radius", IntegerArgumentType.integer())
@@ -133,33 +133,33 @@ public class VNIPCommand {
     }
 
 
-    private static void addProfession(String value, ClientPlayerEntity player) {
+    private static void addProfession(String value, LocalPlayer player) {
         List<String> professions = CLIENT_CONFIG.getProfession();
         if (!professions.contains(value)) {
             professions.add(value);
         } else {
-            player.sendMessage(Text.of("Profession already exists"), false);
+            player.displayClientMessage(Component.nullToEmpty("Profession already exists"), false);
             return;
         }
         CLIENT_CONFIG.setProfession(professions);
         CLIENT_CONFIG.save();
-        player.sendMessage(Text.of("Added " + value + " to " + "profession"), false);
+        player.displayClientMessage(Component.nullToEmpty("Added " + value + " to " + "profession"), false);
     }
 
-    private static void removeProfession(String value, ClientPlayerEntity player) {
+    private static void removeProfession(String value, LocalPlayer player) {
         List<String> professions = CLIENT_CONFIG.getProfession();
         if (professions.contains(value)) {
             professions.remove(value);
         } else {
-            player.sendMessage(Text.of("Profession not found"), false);
+            player.displayClientMessage(Component.nullToEmpty("Profession not found"), false);
             return;
         }
         CLIENT_CONFIG.setProfession(professions);
         CLIENT_CONFIG.save();
-        player.sendMessage(Text.of("Removed " + value + " from " + "profession"), false);
+        player.displayClientMessage(Component.nullToEmpty("Removed " + value + " from " + "profession"), false);
     }
 
-    private static void setConfigValue(String key, String value, ClientPlayerEntity player) {
+    private static void setConfigValue(String key, String value, LocalPlayer player) {
         switch (key) {
             case "alwaysVisibleProfession":
                 CLIENT_CONFIG.setAlwaysVisibleProfession(Boolean.parseBoolean(value));
@@ -171,44 +171,44 @@ public class VNIPCommand {
                 CLIENT_CONFIG.setRadius(Integer.parseInt(value));
                 break;
             default:
-                player.sendMessage(Text.of("Invalid key"), false);
+                player.displayClientMessage(Component.nullToEmpty("Invalid key"), false);
                 return;
         }
 
         CLIENT_CONFIG.save();
-        player.sendMessage(Text.of("Set " + key + " to " + value), false);
+        player.displayClientMessage(Component.nullToEmpty("Set " + key + " to " + value), false);
     }
 
-    private static void showConfigValue(String key, ClientPlayerEntity player) {
+    private static void showConfigValue(String key, LocalPlayer player) {
         Configuration CLIENT_CONFIG = Configuration.load();
         if (CLIENT_CONFIG.getConfigFields().containsKey(key)) {
-            player.sendMessage(Text.of(key + ": " + CLIENT_CONFIG.getConfigFields().get(key)), false);
+            player.displayClientMessage(Component.nullToEmpty(key + ": " + CLIENT_CONFIG.getConfigFields().get(key)), false);
         } else {
-            player.sendMessage(Text.of("Invalid key"), false);
+            player.displayClientMessage(Component.nullToEmpty("Invalid key"), false);
         }
     }
 
     public static void getProfession(FabricClientCommandSource source, int radius) {
-        Box box = source.getPlayer().getBoundingBox().expand(radius);
-        List<VillagerEntity> villagers = source.getPlayer().getWorld().getEntitiesByClass(VillagerEntity.class, box, entity -> true);
-        for (VillagerEntity villagerEntity : villagers) {
-            String xyz = "X: " + villagerEntity.getBlockPos().getX() + " Y: " + villagerEntity.getBlockPos().getY() + " Z: " + villagerEntity.getBlockPos().getZ();
-            MutableText message = Text.literal(villagerEntity.getVillagerData().getProfession().toString() + " at " + xyz);
-            MutableText addButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.add")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession add " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.GREEN);
-            MutableText removeButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.delete")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.RED);
-            source.getPlayer().sendMessage(message.append(addButton).append(removeButton), false);
+        AABB box = source.getPlayer().getBoundingBox().inflate(radius);
+        List<Villager> villagers = source.getPlayer().level().getEntitiesOfClass(Villager.class, box, entity -> true);
+        for (Villager villagerEntity : villagers) {
+            String xyz = "X: " + villagerEntity.blockPosition().getX() + " Y: " + villagerEntity.blockPosition().getY() + " Z: " + villagerEntity.blockPosition().getZ();
+            MutableComponent message = Component.literal(villagerEntity.getVillagerData().profession().getRegisteredName() + " at " + xyz);
+            MutableComponent addButton = Component.literal(" " + I18n.get("config.villagernameisprofession.add")).withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/vnip config profession add " + "\"" + villagerEntity.getVillagerData().profession().getRegisteredName() + "\""))).withStyle(ChatFormatting.GREEN);
+            MutableComponent removeButton = Component.literal(" " + I18n.get("config.villagernameisprofession.delete")).withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().profession().getRegisteredName() + "\""))).withStyle(ChatFormatting.RED);
+            source.getPlayer().displayClientMessage(message.append(addButton).append(removeButton), false);
         }
     }
 
     public static void getProfession(FabricClientCommandSource source) {
-        Box box = source.getPlayer().getBoundingBox().expand(CLIENT_CONFIG.getRadius());
-        List<VillagerEntity> villagers = source.getPlayer().getWorld().getEntitiesByClass(VillagerEntity.class, box, entity -> true);
-        for (VillagerEntity villagerEntity : villagers) {
-            String xyz = "X: " + villagerEntity.getBlockPos().getX() + " Y: " + villagerEntity.getBlockPos().getY() + " Z: " + villagerEntity.getBlockPos().getZ();
-            MutableText message = Text.literal(villagerEntity.getVillagerData().getProfession().toString() + " at " + xyz);
-            MutableText addButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.add")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession add " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.GREEN);
-            MutableText removeButton = Text.literal(" " + I18n.translate("config.villagernameisprofession.delete")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().getProfession().toString() + "\""))).formatted(Formatting.RED);
-            source.getPlayer().sendMessage(message.append(addButton).append(removeButton), false);
+        AABB box = source.getPlayer().getBoundingBox().inflate(CLIENT_CONFIG.getRadius());
+        List<Villager> villagers = source.getPlayer().level().getEntitiesOfClass(Villager.class, box, entity -> true);
+        for (Villager villagerEntity : villagers) {
+            String xyz = "X: " + villagerEntity.blockPosition().getX() + " Y: " + villagerEntity.blockPosition().getY() + " Z: " + villagerEntity.blockPosition().getZ();
+            MutableComponent message = Component.literal(villagerEntity.getVillagerData().profession().getRegisteredName() + " at " + xyz);
+            MutableComponent addButton = Component.literal(" " + I18n.get("config.villagernameisprofession.add")).withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/vnip config profession add " + "\"" + villagerEntity.getVillagerData().profession().getRegisteredName() + "\""))).withStyle(ChatFormatting.GREEN);
+            MutableComponent removeButton = Component.literal(" " + I18n.get("config.villagernameisprofession.delete")).withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/vnip config profession remove " + "\"" + villagerEntity.getVillagerData().profession().getRegisteredName() + "\""))).withStyle(ChatFormatting.RED);
+            source.getPlayer().displayClientMessage(message.append(addButton).append(removeButton), false);
         }
     }
 }

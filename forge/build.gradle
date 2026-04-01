@@ -1,5 +1,7 @@
+import org.gradle.api.file.DuplicatesStrategy
+
 plugins {
-    id 'com.github.johnrengelman.shadow'
+    id 'com.gradleup.shadow'
 }
 
 loom {
@@ -39,7 +41,7 @@ dependencies {
 
 processResources {
     inputs.property 'version', project.version
-    inputs.property 'mod_id', project.archives_name
+    inputs.property 'mod_id', project.mod_id
     inputs.property 'mod_name', project.mod_name
     inputs.property 'mod_description', project.mod_description
     inputs.property 'mod_authors', project.mod_authors
@@ -65,7 +67,7 @@ processResources {
     filesMatching('META-INF/mods.toml') {
         expand(
                 version: project.version,
-                mod_id: project.archives_name,
+                mod_id: project.mod_id,
                 mod_name: project.mod_name,
                 mod_description: project.mod_description,
                 mod_authors: project.mod_authors,
@@ -81,6 +83,8 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    includeEmptyDirs = false
 }
 
 remapJar {

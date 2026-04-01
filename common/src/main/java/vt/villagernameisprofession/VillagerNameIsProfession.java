@@ -1,15 +1,15 @@
 package vt.villagernameisprofession;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
 import vt.villagernameisprofession.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 public final class VillagerNameIsProfession {
     public static final String MOD_ID = "villagernameisprofession";
@@ -20,15 +20,15 @@ public final class VillagerNameIsProfession {
         // Write common init code here.
     }
 
-    public static void ClientTickEvent(MinecraftClient client) {
-        if (client.world != null) {
-            World world = client.world;
+    public static void ClientTickEvent(Minecraft client) {
+        if (client.level != null) {
+            Level world = client.level;
             if (client.player == null) {
                 return;
             }
-            Box box = client.player.getBoundingBox().expand(CLIENT_CONFIG.getRadius());
-            List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, box, entity -> true);
-            for (VillagerEntity villagerEntity : villagers) {
+            AABB box = client.player.getBoundingBox().inflate(CLIENT_CONFIG.getRadius());
+            List<Villager> villagers = world.getEntitiesOfClass(Villager.class, box, entity -> true);
+            for (Villager villagerEntity : villagers) {
                 if (CheckBlockMode(villagerEntity)) {
                     if (villagerEntity.hasCustomName()) {
                         if (isCustomNameIsProfession(villagerEntity)) {
@@ -38,10 +38,10 @@ public final class VillagerNameIsProfession {
                         updateName(villagerEntity);
                     }
                 } else {
-                    if (UpdatedVillagers.contains(villagerEntity.getUuid().toString())) {
+                    if (UpdatedVillagers.contains(villagerEntity.getUUID().toString())) {
                         villagerEntity.setCustomName(null);
                         villagerEntity.setCustomNameVisible(false);
-                        UpdatedVillagers.remove(villagerEntity.getUuid().toString());
+                        UpdatedVillagers.remove(villagerEntity.getUUID().toString());
                     }
                 }
             }
@@ -50,37 +50,37 @@ public final class VillagerNameIsProfession {
         }
     }
 
-    private static void updateName(VillagerEntity villagerEntity) {
-        String professionKey = villagerEntity.getVillagerData().getProfession().toString().toLowerCase();
-        Text customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
-        if (professionKey.contains(":") && customName.contains(Text.of("entity.minecraft.villager." + professionKey))) {
+    private static void updateName(Villager villagerEntity) {
+        String professionKey = villagerEntity.getVillagerData().profession().getRegisteredName().toLowerCase();
+        Component customName = Component.nullToEmpty(I18n.get("entity.minecraft.villager." + professionKey));
+        if (professionKey.contains(":") && customName.contains(Component.nullToEmpty("entity.minecraft.villager." + professionKey))) {
             professionKey = professionKey.substring(professionKey.lastIndexOf(":") + 1);
         }
-        customName = Text.of(I18n.translate("entity.minecraft.villager." + professionKey));
-        if (!customName.contains(Text.of("entity.minecraft.villager." + professionKey))) {
+        customName = Component.nullToEmpty(I18n.get("entity.minecraft.villager." + professionKey));
+        if (!customName.contains(Component.nullToEmpty("entity.minecraft.villager." + professionKey))) {
             villagerEntity.setCustomName(customName);
             villagerEntity.setCustomNameVisible(CLIENT_CONFIG.isAlwaysVisibleProfession());
-            if (!UpdatedVillagers.contains(villagerEntity.getUuid().toString())) {
-                UpdatedVillagers.add(villagerEntity.getUuid().toString());
+            if (!UpdatedVillagers.contains(villagerEntity.getUUID().toString())) {
+                UpdatedVillagers.add(villagerEntity.getUUID().toString());
             }
         }
 
     }
 
-    static boolean isCustomNameIsProfession(VillagerEntity villagerEntity) {
-        return UpdatedVillagers.contains(villagerEntity.getUuid().toString());
+    static boolean isCustomNameIsProfession(Villager villagerEntity) {
+        return UpdatedVillagers.contains(villagerEntity.getUUID().toString());
     }
 
-    public static boolean CheckBlockMode(VillagerEntity villagerEntity) {
+    public static boolean CheckBlockMode(Villager villagerEntity) {
         if (CLIENT_CONFIG.isProfessionListBlocking()) {
             if (!(CLIENT_CONFIG.getProfession().size() == 0)) {
-                return !(CLIENT_CONFIG.getProfession().contains(villagerEntity.getVillagerData().getProfession().toString()));
+                return !(CLIENT_CONFIG.getProfession().contains(villagerEntity.getVillagerData().profession().getRegisteredName()));
             } else {
                 return true;
             }
         } else {
             if (!(CLIENT_CONFIG.getProfession().size() == 0)) {
-                return CLIENT_CONFIG.getProfession().contains(villagerEntity.getVillagerData().getProfession().toString());
+                return CLIENT_CONFIG.getProfession().contains(villagerEntity.getVillagerData().profession().getRegisteredName());
             } else {
                 return false;
             }

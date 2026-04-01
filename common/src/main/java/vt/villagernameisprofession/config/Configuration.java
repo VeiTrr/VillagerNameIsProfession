@@ -2,7 +2,6 @@ package vt.villagernameisprofession.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.client.MinecraftClient;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -17,7 +16,10 @@ public class Configuration {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String CONFIG_FILE_NAME = "VillagerNameIsProfession.json";
-    private static final File CONFIG_FILE = MinecraftClient.getInstance().runDirectory.toPath().resolve("config").resolve(CONFIG_FILE_NAME).toFile();
+
+    private static File getConfigFile() {
+        return new File(new File("config"), CONFIG_FILE_NAME);
+    }
 
     private boolean alwaysVisibleProfession;
     private int radius;
@@ -65,9 +67,11 @@ public class Configuration {
     }
 
     public static Configuration load() {
-        if (CONFIG_FILE.exists()) {
+        File configFile = getConfigFile();
+        if (configFile.exists()) {
             try {
-                return GSON.fromJson(FileUtils.readFileToString(CONFIG_FILE, StandardCharsets.UTF_8), Configuration.class);
+                Configuration configuration = GSON.fromJson(FileUtils.readFileToString(configFile, StandardCharsets.UTF_8), Configuration.class);
+                return configuration != null ? configuration : new Configuration();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,7 +81,12 @@ public class Configuration {
 
     public void save() {
         try {
-            FileUtils.writeStringToFile(CONFIG_FILE, GSON.toJson(this), StandardCharsets.UTF_8);
+            File configFile = getConfigFile();
+            File parent = configFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                FileUtils.forceMkdir(parent);
+            }
+            FileUtils.writeStringToFile(configFile, GSON.toJson(this), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }

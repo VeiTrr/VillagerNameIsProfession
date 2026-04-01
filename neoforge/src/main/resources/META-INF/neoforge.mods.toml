@@ -1,32 +1,29 @@
-modLoader = "javafml"
-loaderVersion = "[4,)"
-issueTrackerURL = "https://github.com/VeiTrr/VillagerNameIsProfession/issues"
-license = "MIT"
-
+modLoader = "javafml" #mandatory
+loaderVersion = "[4,)" #mandatory
+license = "${mod_license}"
+issueTrackerURL = "${mod_issue_tracker}"
 [[mods]]
-modId = "villagernameisprofession"
+modId = "${mod_id}"
 version = "${version}"
-displayName = "VillagerNameIsProfession"
-authors = "VeiTr"
+displayName = "${mod_name}"
+authors = "${mod_authors}"
+
 description = '''
-Set Villager name to its profession
+${mod_description}
 '''
-logoFile = "icon.png"
-displayTest = "NONE"
-
-[[dependencies.villagernameisprofession]]
-modId = "neoforge"
-type = "required"
-versionRange = "[21.0,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.villagernameisprofession]]
-modId = "minecraft"
-type = "required"
-versionRange = "[1.21,)"
-ordering = "NONE"
-side = "BOTH"
 
 [[mixins]]
-config = "villagernameisprofession.mixins.json"
+config = "${mod_id}.mixins.json"
+
+[[dependencies.${mod_id}]] #optional
+modId = "neoforge" #mandatory
+type = "required" #mandatory
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"

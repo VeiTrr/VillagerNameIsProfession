@@ -1,24 +1,25 @@
 package vt.villagernameisprofession.config;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import vt.villagernameisprofession.VillagerNameIsProfession;
 
 import static vt.villagernameisprofession.VillagerNameIsProfession.CLIENT_CONFIG;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+
 public class ConfigScreen extends Screen {
     protected final Screen parent;
     private ListWidget professionListWidget;
 
-    ButtonWidget DoneButton;
+    Button DoneButton;
 
     int radiusX;
     int radiusY;
@@ -26,7 +27,7 @@ public class ConfigScreen extends Screen {
     int radiusLabelY;
 
     protected ConfigScreen(Screen parent) {
-        super(Text.translatable("config.villagernameisprofession.title"));
+        super(Component.translatable("config.villagernameisprofession.title"));
         this.parent = parent;
     }
 
@@ -34,59 +35,55 @@ public class ConfigScreen extends Screen {
         return new ConfigScreen(parent);
     }
 
-    public static Screen createScreen(MinecraftClient minecraftClient, Screen parent) {
-        return new ConfigScreen(parent);
-    }
-
     @Override
     protected void init() {
         professionListWidget = new ListWidget(this);
-        addDrawableChild(professionListWidget);
-        addSelectableChild(professionListWidget);
+        professionListWidget.setPosition(0, 40);
+        professionListWidget.setSize(width, Math.max(0, height - 80));
+        addRenderableWidget(professionListWidget);
 
-        CheckboxWidget alwaysVisibleProfessionCheckbox = getAVPCheckbox();
-        addDrawableChild(alwaysVisibleProfessionCheckbox);
+        Checkbox alwaysVisibleProfessionCheckbox = getAVPCheckbox();
+        addRenderableWidget(alwaysVisibleProfessionCheckbox);
 
         radiusX = width / 4;
         radiusY = 6;
-        TextFieldWidget radius = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, radiusX, radiusY, 30, 15, Text.of(""));
+        EditBox radius = new EditBox(Minecraft.getInstance().font, radiusX, radiusY, 30, 15, Component.nullToEmpty(""));
         radius.setMaxLength(256);
-        radius.setText(String.valueOf(CLIENT_CONFIG.getRadius()));
-        int radiusLabelwidth = (I18n.translate("config.villagernameisprofession.radius").length() - 1) * 5;
+        radius.setValue(String.valueOf(CLIENT_CONFIG.getRadius()));
+        int radiusLabelwidth = (I18n.get("config.villagernameisprofession.radius").length() - 1) * 5;
         radiusLabelX = radiusX - radiusLabelwidth;
         radiusLabelY = radiusY + (radius.getHeight() - 8) / 2;
 
-        addDrawableChild(new TextWidget(radiusLabelX, radiusY, radiusLabelwidth, 20, Text.of(I18n.translate("config.villagernameisprofession.radius")), MinecraftClient.getInstance().textRenderer));
+        addRenderableWidget(new StringWidget(radiusLabelX, radiusY, radiusLabelwidth, 20, Component.nullToEmpty(I18n.get("config.villagernameisprofession.radius")), Minecraft.getInstance().font));
 
-        radius.setChangedListener(text -> {
+        radius.setResponder(text -> {
             if (!text.isEmpty()) {
                 CLIENT_CONFIG.setRadius(Integer.parseInt(text));
             }
         });
-        addDrawableChild(radius);
+        addRenderableWidget(radius);
 
-        int buttonX = width / 2 - ButtonWidget.DEFAULT_WIDTH / 2;
+        int buttonX = width / 2 - Button.DEFAULT_WIDTH / 2;
         int buttonY = height - 25;
-        DoneButton = new ButtonWidget.Builder(
-                Text.of(I18n.translate("gui.done")),
+        DoneButton = new Button.Builder(
+                Component.nullToEmpty(I18n.get("gui.done")),
                 button -> {
                     professionListWidget.setFocused(false);
                     CLIENT_CONFIG.save();
                     VillagerNameIsProfession.loadConfig();
-                    MinecraftClient.getInstance().setScreen(parent);
+                    Minecraft.getInstance().setScreen(parent);
                 }
-        ).position(buttonX, buttonY).build();
-        addDrawableChild(DoneButton);
-        super.init();
+        ).pos(buttonX, buttonY).build();
+        addRenderableWidget(DoneButton);
     }
 
-    private @NotNull CheckboxWidget getAVPCheckbox() {
+    private @NotNull Checkbox getAVPCheckbox() {
         int checkBoxX = width / 2 + width / 6;
         int checkBoxY = 3;
-        return  CheckboxWidget.builder(Text.of(I18n.translate("config.villagernameisprofession.alwaysVisibleProfession")), textRenderer)
+        return  Checkbox.builder(Component.nullToEmpty(I18n.get("config.villagernameisprofession.alwaysVisibleProfession")), font)
                 .pos(checkBoxX, checkBoxY)
-                .checked(CLIENT_CONFIG.isAlwaysVisibleProfession())
-                .callback((checkbox, checked) -> CLIENT_CONFIG.setAlwaysVisibleProfession(checked))
+                .selected(CLIENT_CONFIG.isAlwaysVisibleProfession())
+                .onValueChange((checkbox, checked) -> CLIENT_CONFIG.setAlwaysVisibleProfession(checked))
                 .build();
     }
 
@@ -95,29 +92,14 @@ public class ConfigScreen extends Screen {
         super.tick();
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
+    public void render(@NotNull GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        professionListWidget.setPosition(0, 40);
-        professionListWidget.setDimensions(width, height - DoneButton.getHeight() - 60);
-        professionListWidget.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 15, 0xFFFFFF);
+        context.drawCenteredString(font, title, width / 2, 15, 0xFFFFFF);
     }
 
     protected void reInit(Screen parent) {
-        MinecraftClient.getInstance().setScreen(new ConfigScreen(parent));
-        init();
+        Minecraft.getInstance().setScreen(new ConfigScreen(parent));
     }
 }
