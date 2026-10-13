@@ -6,7 +6,7 @@ import vt.villagernameisprofession.VillagerNameIsProfession;
 import static vt.villagernameisprofession.VillagerNameIsProfession.CLIENT_CONFIG;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
@@ -94,9 +94,9 @@ public class ConfigScreen extends Screen {
 
 
     @Override
-    public void render(@NotNull GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-        context.drawCenteredString(font, title, width / 2, 15, 0xFFFFFF);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
+        context.centeredText(font, title, width / 2, 15, 0xFFFFFF);
     }
 
     protected void reInit(Screen parent) {

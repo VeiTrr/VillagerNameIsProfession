@@ -35,7 +35,7 @@ configurations {
 dependencies {
     forge "net.minecraftforge:forge:$rootProject.forge_version"
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':common')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 }
 
@@ -87,6 +87,8 @@ shadowJar {
     includeEmptyDirs = false
 }
 
-remapJar {
-    input.set shadowJar.archiveFile
+jar {
+    dependsOn shadowJar
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(zipTree(shadowJar.archiveFile))
 }

@@ -7,7 +7,7 @@ import vt.villagernameisprofession.VillagerNameIsProfession;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.input.CharacterEvent;
@@ -138,7 +138,7 @@ public class ListWidget extends ContainerObjectSelectionList<ListWidget.Entry> {
 
 
         @Override
-        public void renderContent(@NonNull GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void extractContent(@NonNull GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int rowIndex = ListWidget.this.children().indexOf(this);
             int x = ListWidget.this.getRowLeft();
             int y = ListWidget.this.getRowTop(rowIndex);
@@ -156,11 +156,11 @@ public class ListWidget extends ContainerObjectSelectionList<ListWidget.Entry> {
             modeSwitchCheckbox.setX(deleteButton.getX() + deleteButton.getWidth() + 5);
             modeSwitchCheckbox.setY(deleteButton.getY());
 
-            textField.render(context, mouseX, mouseY, tickDelta);
-            textFieldNoEdit.render(context, mouseX, mouseY, tickDelta);
-            editButton.render(context, mouseX, mouseY, tickDelta);
-            deleteButton.render(context, mouseX, mouseY, tickDelta);
-            modeSwitchCheckbox.render(context, mouseX, mouseY, tickDelta);
+            textField.extractRenderState(context, mouseX, mouseY, tickDelta);
+            textFieldNoEdit.extractRenderState(context, mouseX, mouseY, tickDelta);
+            editButton.extractRenderState(context, mouseX, mouseY, tickDelta);
+            deleteButton.extractRenderState(context, mouseX, mouseY, tickDelta);
+            modeSwitchCheckbox.extractRenderState(context, mouseX, mouseY, tickDelta);
         }
 
         @Override
