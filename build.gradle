@@ -107,7 +107,7 @@ publishMods {
         requires {
             slug = "fabric-api"
         }
-        displayName = "[Fabric] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Fabric] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     curseforge("curseforgeForge") {
@@ -118,7 +118,7 @@ publishMods {
         }
         modLoaders.add("forge")
         modLoaders.add("neoforge")
-        displayName = "[Forge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Forge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
 
@@ -132,7 +132,7 @@ publishMods {
         requires {
             slug = "fabric-api"
         }
-        displayName = "[Fabric] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Fabric] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     modrinth("modrinthForge") {
@@ -143,7 +143,7 @@ publishMods {
         }
         modLoaders.add("forge")
         modLoaders.add("neoforge")
-        displayName = "[Forge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Forge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
 }
