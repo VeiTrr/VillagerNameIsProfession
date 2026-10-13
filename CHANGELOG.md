@@ -1,1 +1,1 @@
-# 26.1 port
+# 26.1 port and some optimizations

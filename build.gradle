@@ -81,7 +81,7 @@ publishMods {
         changelogType = "markdown"
         minecraftVersionRange {
             start = project.minecraft_version
-            end = "26.1"
+            end = "26.1.2"
         }
         clientRequired = true
         serverRequired = false
@@ -92,7 +92,7 @@ publishMods {
         projectId = "yQLp1BFa"
         minecraftVersionRange {
             start = project.minecraft_version
-            end = "26.1"
+            end = "26.1.2"
         }
     }
 
@@ -106,7 +106,7 @@ publishMods {
         requires {
             slug = "fabric-api"
         }
-        displayName = "[Fabric] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Fabric] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     curseforge("curseforgeForge") {
@@ -116,7 +116,7 @@ publishMods {
             additionalFiles.from(project(":forge").tasks.named("sourcesJar"))
         }
         modLoaders.add("forge")
-        displayName = "[Forge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Forge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     curseforge("curseforgeNeoForge") {
@@ -126,7 +126,7 @@ publishMods {
             additionalFiles.from(project(":neoforge").tasks.named("sourcesJar"))
         }
         modLoaders.add("neoforge")
-        displayName = "[NeoForge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[NeoForge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     modrinth("modrinthFabric") {
@@ -139,7 +139,7 @@ publishMods {
         requires {
             slug = "fabric-api"
         }
-        displayName = "[Fabric] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Fabric] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     modrinth("modrinthForge") {
@@ -149,7 +149,7 @@ publishMods {
             additionalFiles.from(project(":forge").tasks.named("sourcesJar"))
         }
         modLoaders.add("forge")
-        displayName = "[Forge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[Forge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 
     modrinth("modrinthNeoForge") {
@@ -159,6 +159,6 @@ publishMods {
             additionalFiles.from(project(":neoforge").tasks.named("sourcesJar"))
         }
         modLoaders.add("neoforge")
-        displayName = "[NeoForge] " + "VNIM-" + project.minecraft_version + "-" + project.version
+        displayName = "[NeoForge] " + "VNIP-" + project.minecraft_version + "-" + project.version
     }
 }
